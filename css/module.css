@@ -1,0 +1,149 @@
+/* common */
+
+.content_title_wrapper{
+    font-family: 'OT Missouri 16mm';
+    text-align: center;
+}
+
+/* about */
+
+.right_text_wrapper{
+    text-align: right;
+}
+
+/* curatorial */
+
+.curatorial_content{
+    padding: 60px 0px;
+    position: relative;}
+
+
+.curatorial_content .description{
+    margin-top: 60px;
+    position: relative;
+}
+
+.curatorial_content .description::after{
+    content:"";
+    position: absolute;
+    top:0px;
+    bottom: 0px;
+    margin: auto;
+    left: 0px;
+    right: 0px;
+    width: 1px;
+    height: 100%;
+    background-color: #000;
+    margin: auto;
+}
+
+.highlight_text .introduction::before{
+    content:"●";
+    position: relative;
+    margin-right: 5px;
+}
+
+.curatorial_content .free_text{
+    margin-top: 60px;
+}
+
+.curatorial_content .quote{
+    margin-top: 60px;
+    text-align: center;
+}
+
+.curatorial_content .quote::before{
+    content:"●";
+    position: relative;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.curatorial_content .quote::after{
+    content:"●";
+    position: relative;
+    display: block;
+    margin-top: 10px;
+}
+
+.curatorial_content .free_text:first-child{
+    margin-top: auto;
+}
+
+.curatorial_content .quote:first-child{
+    margin-top: auto;
+}
+
+/* project detail */
+
+.project_detail_content{
+    padding: 60px 0px;
+    position: relative;
+}
+
+.project_detail_content .art_wrapper{
+    margin-top: 60px;
+}
+
+.project_detail_content .art_wrapper .bg{
+    padding-bottom: 50%;
+    position: relative;
+    background-position: center center;
+    background-size: cover;
+    display: block;
+}
+
+.project_detail_content .introduction{
+    margin-top: 60px;
+}
+
+.project_detail_content .introduction::before{
+    content:"●";
+    position: relative;
+    margin-right: 5px;
+}
+
+.project_detail_content .description{
+    margin-top: 60px;
+    position: relative;
+}
+
+.project_detail_content .description .free_text{
+    margin-right: 600px;
+}
+
+.project_detail_content .sticky_text_wrapper{
+    position: absolute;
+    top:0px;
+    right: 0px;
+    height: 100%;
+}
+
+
+.project_detail_content .sticky_text{
+    width: 300px;
+    position: sticky;
+    top:135px
+}
+
+.project_detail_content .artist_pic{
+    padding-bottom: 100%;
+    position: relative;
+    background-position: center center;
+    background-size: cover;
+}
+
+.project_detail_content .artist_name{
+    margin-top: 25px;
+    text-align: center;
+}
+
+.project_detail_content .artist_description{
+    margin-top: 20px;
+}
+
+
+@media screen and (max-width: 1023px) { 
+
+
+}
