@@ -83,15 +83,54 @@
 
 .project_detail_content .art_wrapper{
     margin-top: 60px;
+    position: relative;
 }
 
 .project_detail_content .art_wrapper .bg{
+	-webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
     padding-bottom: 50%;
     position: relative;
     background-position: center center;
     background-size: cover;
     display: block;
+    align-items: center;
+    justify-content: center;
 }
+
+.project_detail_content .art_wrapper:hover .bg{
+    opacity: 0.9;
+}
+
+.project_detail_content .art_wrapper::after{
+	-webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    content:"▶";
+    text-align: center;
+    font-family: 'OT Missouri 16mm';
+    color: #fff;
+	font-size: calc(12px + 5vw);
+	line-height:200px;
+    width: 200px;
+    height: 200px;
+    mix-blend-mode: difference;
+    display: block;
+    margin: auto;
+    position: absolute;
+    top:0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    margin: auto;
+    pointer-events: none;
+}
+
+
+
+.project_detail_content .art_wrapper:hover::after{
+    transform: scale(1.2);
+}
+
 
 .project_detail_content .introduction{
     margin-top: 60px;
@@ -142,8 +181,118 @@
     margin-top: 20px;
 }
 
+.art_btn{
+    position: relative;
+    display: block;
+    cursor: pointer;
+}
+
+
+.art_popup{
+	position:fixed;
+	right:20px;
+	top:20px;
+    bottom:20px;
+	left: 20px;
+    margin: auto;  
+	background-color:#b0b0b0;
+	z-index: 111;
+	display: none;
+    border:1px solid #000;
+}
+
+.art_popup_content{
+    position: absolute;
+    left: 30px;
+    top:30px;
+    right: 30px;
+    bottom: 30px;
+    margin: auto;
+}
+
+.art_popup iframe{
+    position: absolute;
+    left: 0px;
+    top:0px;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.art_popup_close{
+
+}
+
+
+
+.art_popup_close{
+	z-index:10;
+	position: absolute;
+	color:#54565A;
+	width: 25px;
+	height:25px;
+	top:5px;
+	right:5px;
+    cursor: pointer;
+	}	
+
+	
+.art_popup_close::before, .art_popup_close::after{
+    content:"";
+	position:absolute;
+	left:0%;
+	top:50%;
+	width:100%;
+	height:1px;
+	overflow:hidden;
+	display:block;
+	background-color:#000;
+	}		
+	
+	
+.art_popup_close::before{
+	-webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+	}	
+	
+.art_popup_close::after{
+	-webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+	}	
+	
+
+
 
 @media screen and (max-width: 1023px) { 
 
+	.curatorial_content {
+		padding: 30px 0px;
+	}
+
+    .project_detail_content .description .free_text {
+        margin-right: auto;
+      }
+
+      .project_detail_content .sticky_text_wrapper {
+        position: relative;
+        top: auto;
+        right: auto;
+        height: auto;
+        margin-top: 30px;
+      }
+
+      .project_detail_content .sticky_text {
+        width: auto;
+        position: relative;
+        top: auto;
+      }
+
+      .art_popup{
+          right:5px;
+          top:5px;
+          bottom:5px;
+          left: 5px;
+      }
+      
 
 }

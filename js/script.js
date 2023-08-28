@@ -189,6 +189,27 @@ function init_event(){
 		}
 		return false;
 	})
+
+	$(".art_popup_close").click(function(){
+		if($(".art_popup").hasClass("active")){
+			$(".art_popup").removeClass("active");
+			$(".art_popup").stop().fadeOut(600,function(){
+				$(".art_popup iframe").stop().fadeOut();
+			});
+		}
+		return false;
+	})
+
+	$(".art_popup_open").click(function(){
+		var mytarget = $(this).attr("data-target");
+		if(!$(".art_popup[data-id='"+mytarget+"']").hasClass("active")){
+			$(".art_popup[data-id='"+mytarget+"']").addClass("active");
+			$(".art_popup[data-id='"+mytarget+"']").stop().fadeIn(600,function(){
+				$(".art_popup[data-id='"+mytarget+"'] iframe").stop().fadeIn();
+			});
+		}
+		return false;
+	})
 	
 }
 
