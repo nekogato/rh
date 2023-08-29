@@ -20,7 +20,7 @@ var mouseGlobal = {
 var addTunnelElement = function(url, x, hue){
     var points = [];
     var i = 0;
-    var geometry = new THREE.Geometry();
+    var geometry = new THREE.BufferGeometry();
 
     // var oldx = 0;
     // var oldy = 0;
@@ -113,7 +113,7 @@ var addTunnelElement = function(url, x, hue){
 
     var curve = new THREE.CatmullRomCurve3(points);
 
-    var geometry = new THREE.Geometry();
+    var geometry = new THREE.BufferGeometry();
     geometry.vertices = curve.getPoints(140);
     var splineMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial());
 
@@ -122,11 +122,16 @@ var addTunnelElement = function(url, x, hue){
     var tubeMaterial2 = new THREE.MeshBasicMaterial({
         side: THREE.BackSide,
         map: tubeTexture,
+        toneMapped: false,
     });
 
-    var tubeMaterial = new THREE.MeshBasicMaterial({
+    // var tubeMaterial = new THREE.MeshBasicMaterial({
+    var tubeMaterial = new THREE.MeshPhysicalMaterial({
         side: THREE.FrontSide,
-        vertexColors: THREE.FaceColors
+        // vertexColors: THREE.FaceColors
+        vertexColors: true,
+        sheen: 0.75,
+        sheenColor: new THREE.Color("hsl("+ hue+270 + ", 100%, 60%)"),
     });
 
     // Repeat the pattern
@@ -136,9 +141,17 @@ var addTunnelElement = function(url, x, hue){
 
     var tubeGeometry = new THREE.TubeGeometry(curve, 140, 0.02, 30, false);
     //
-    for (var i = 0; i < tubeGeometry.faces.length; i++) {
-        f = tubeGeometry.faces[i];
-        p = tubeGeometry.vertices[f.a];
+    var tubeColors = new Float32Array(tubeGeometry.getAttribute("position").count * 3);
+    var p = new THREE.Vector3();
+    // for (var i = 0; i < tubeGeometry.faces.length; i++) {
+    for (var i = 0; i < tubeGeometry.attributes.position.count; i++) {
+        // f = tubeGeometry.faces[i];
+        // p = tubeGeometry.vertices[f.a];
+        p.set(
+            tubeGeometry.getAttribute("position").array[i * 3],
+            tubeGeometry.getAttribute("position").array[i * 3 + 1],
+            tubeGeometry.getAttribute("position").array[i * 3 + 2]
+        )
         var color = new THREE.Color(
             "hsl(" +
                 (Math.floor(
@@ -148,9 +161,12 @@ var addTunnelElement = function(url, x, hue){
                 hue) +
             ",140%,60%)"
         );
-        f.color = color;
+        // f.color = color;
+        tubeColors[i * 3] = color.r;
+        tubeColors[i * 3 + 1] = color.g;
+        tubeColors[i * 3 + 2] = color.b;
     }
-
+    tubeGeometry.setAttribute('color', new THREE.BufferAttribute(tubeColors, 3));
 
     var newmaterials = [ tubeMaterial, tubeMaterial2 ];
 
@@ -187,12 +203,25 @@ function updateCurve() {
     for (let k = 0; k < tunnelArr.length; k++) {
         var i = 0;
         var index = 0;
-        var vertice = null;
-        for (i = 0; i < tunnelArr[k].geometry.vertices.length; i += 1) {
+        var vertice = new THREE.Vector3();
+        var vertice_o = new THREE.Vector3();
+        var positions = [];
+        // for (i = 0; i < tunnelArr[k].geometry.vertices.length; i += 1) {
+        for (i = 0; i < tunnelArr[k].geometry.getAttribute("position").count; i+= 1) {
         
-        vertice_o =  tunnelArr[k].geometry_o.vertices[i];
-        vertice = tunnelArr[k].geometry.vertices[i];
-        index = Math.floor(i / 30);
+        // vertice_o =  tunnelArr[k].geometry_o.vertices[i];
+        // vertice = tunnelArr[k].geometry.vertices[i];
+        vertice_o.set(
+            tunnelArr[k].geometry_o.getAttribute("position").array[i*3],
+            tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1],
+            tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2]
+        )
+        vertice.set(
+            tunnelArr[k].geometry.getAttribute("position").array[i*3],
+            tunnelArr[k].geometry.getAttribute("position").array[i*3+1],
+            tunnelArr[k].geometry.getAttribute("position").array[i*3+2]
+        )
+        index = Math.floor(i / 31);
         // vertice.x +=
         // (vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x - vertice.x) /
         // 10;
@@ -205,9 +234,12 @@ function updateCurve() {
         vertice.x += ((vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x) - vertice.x) / 15;
         vertice.y += ((vertice_o.y + tunnelArr[k].splineMesh.geometry.vertices[index].y) - vertice.y) / 15;
         //vertice.applyAxisAngle(new THREE.Vector3(0,0,1), Math.abs(Math.cos(delta*0.001+vertice.z*5))*0.1);
+        
+        positions.push(vertice.x, vertice.y, vertice.z)
             
         }
-        tunnelArr[k].geometry.verticesNeedUpdate = true;
+        // tunnelArr[k].geometry.verticesNeedUpdate = true;
+        tunnelArr[k].geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(positions), 3));
         
         var numPoints = 20;
         var radius = 0.08;
@@ -502,6 +534,13 @@ function init() {
 	document.body.appendChild( renderer.domElement );
 	controls = new THREE.MapControls( camera, renderer.domElement );
 
+    const environment = new THREE.RoomEnvironment( renderer );
+    const pmremGenerator = new THREE.PMREMGenerator( renderer );
+    scene.environment = pmremGenerator.fromScene( environment ).texture;
+
+    // renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMapping = THREE.CineonToneMapping;
+    renderer.toneMappingExposure = 1.5;
 
 	mouseX = 0;
 	mouseY = 0;
