@@ -161,6 +161,7 @@ var addTunnelElement = function(url, x, hue){
                 hue) +
             ",140%,60%)"
         );
+        color.convertSRGBToLinear();
         // f.color = color;
         tubeColors[i * 3] = color.r;
         tubeColors[i * 3 + 1] = color.g;
@@ -495,8 +496,8 @@ function init() {
 	camera = new THREE.PerspectiveCamera( 15, window.innerWidth / window.innerHeight, 0.01, 10 );
   	camera.position.set( 0, 0, 2 );
 	scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xc8c8c8, 2, 2.5);
-	scene.background = new THREE.Color( 0xc8c8c8 );
+    scene.fog = new THREE.Fog(0xb0b0b0, 2, 2.5);        // 0xc8c8c8
+	scene.background = new THREE.Color( 0xb0b0b0 );     // 0xc8c8c8
 
     
 	tunnelgroup = new THREE.Group();
@@ -508,6 +509,12 @@ function init() {
     tunnelgroup.position.z=1.5;
     tunnelgroup.rotation.x=Math.PI / 180 * 180;
 	scene.add( tunnelgroup );
+
+
+
+    const pointLight = new THREE.PointLight( 0xFFFFFF, 20, 1.5, 2)
+    pointLight.position.set(-0.5, 0.5, 0)
+    scene.add(pointLight)
     
 
 
@@ -540,7 +547,7 @@ function init() {
 
     // renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMapping = THREE.CineonToneMapping;
-    renderer.toneMappingExposure = 1.5;
+    renderer.toneMappingExposure = 2;
 
 	mouseX = 0;
 	mouseY = 0;
