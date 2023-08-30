@@ -1,0 +1,23 @@
+name: Deploy to FTP
+
+on:
+  push:
+    branches:
+      - master  # Change this to your desired branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Upload to FTP
+      uses: sebastianpopp/ftp-action@v2
+      with:
+        ftp-server: ${{ secrets.FTP_SERVER }}
+        ftp-username: ${{ secrets.FTP_USERNAME }}
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: /Users/nekogato/Desktop/work/rh
+        remote-dir: /domains/nekodeveloper.com/public_html/reimagineheritage/html2
