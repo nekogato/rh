@@ -16,8 +16,9 @@ jobs:
     - name: Upload to FTP
       uses: sebastianpopp/ftp-action@releases/v2
       with:
-        ftp-server: ${{ secrets.FTP_SERVER }}
-        ftp-username: ${{ secrets.FTP_USERNAME }}
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: /Users/nekogato/Desktop/work/rh
-        remote-dir: /domains/nekodeveloper.com/public_html/reimagineheritage/html2
+        host: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: "/Users/nekogato/Desktop/work/rh"
+        remoteDir: "/domains/nekodeveloper.com/public_html/reimagineheritage/html2"
+        options: "--delete --asci"
