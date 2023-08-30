@@ -115,7 +115,9 @@ var addTunnelElement = function(url, x, hue){
 
     var geometry = new THREE.BufferGeometry();
     geometry.vertices = curve.getPoints(140);
-    var splineMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial());
+    geometry.setFromPoints(geometry.vertices);
+    var splineMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFF0000, depthTest: false, depthWrite: false}));
+    splineMesh.renderOrder = 1
 
 	var tubeTexture = new THREE.TextureLoader().load(url);
 
@@ -203,26 +205,28 @@ var addTunnelElement = function(url, x, hue){
 function updateCurve() {
     for (let k = 0; k < tunnelArr.length; k++) {
         var i = 0;
-        var index = 0;
+        // var index = 0;
         var vertice = new THREE.Vector3();
-        var vertice_o = new THREE.Vector3();
+        // var vertice_o = new THREE.Vector3();
         var positions = [];
         // for (i = 0; i < tunnelArr[k].geometry.vertices.length; i += 1) {
+        tunnelArr[k].geometry_o = new THREE.TubeGeometry(tunnelArr[k].curve, 140, 0.02, 30, false);
+
         for (i = 0; i < tunnelArr[k].geometry.getAttribute("position").count; i+= 1) {
         
         // vertice_o =  tunnelArr[k].geometry_o.vertices[i];
         // vertice = tunnelArr[k].geometry.vertices[i];
-        vertice_o.set(
-            tunnelArr[k].geometry_o.getAttribute("position").array[i*3],
-            tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1],
-            tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2]
-        )
+        // vertice_o.set(
+        //     tunnelArr[k].geometry_o.getAttribute("position").array[i*3],
+        //     tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1],
+        //     tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2]
+        // )
         vertice.set(
             tunnelArr[k].geometry.getAttribute("position").array[i*3],
             tunnelArr[k].geometry.getAttribute("position").array[i*3+1],
             tunnelArr[k].geometry.getAttribute("position").array[i*3+2]
         )
-        index = Math.floor(i / 31);
+        // index = Math.floor(i / 31);
         // vertice.x +=
         // (vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x - vertice.x) /
         // 10;
@@ -232,10 +236,13 @@ function updateCurve() {
         
         //
         
-        vertice.x += ((vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x) - vertice.x) / 15;
-        vertice.y += ((vertice_o.y + tunnelArr[k].splineMesh.geometry.vertices[index].y) - vertice.y) / 15;
+        // vertice.x += ((vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x) - vertice.x) / 15;
+        // vertice.y += ((vertice_o.y + tunnelArr[k].splineMesh.geometry.vertices[index].y) - vertice.y) / 15;
         //vertice.applyAxisAngle(new THREE.Vector3(0,0,1), Math.abs(Math.cos(delta*0.001+vertice.z*5))*0.1);
         
+        vertice.x += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3] - vertice.x) / 15;
+        vertice.y += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1] - vertice.y) / 15;
+
         positions.push(vertice.x, vertice.y, vertice.z)
             
         }
@@ -272,8 +279,9 @@ function updateCurve() {
         
         }
 
-        tunnelArr[k].splineMesh.geometry.verticesNeedUpdate = true;
+        // tunnelArr[k].splineMesh.geometry.verticesNeedUpdate = true;
         tunnelArr[k].splineMesh.geometry.vertices = tunnelArr[k].curve.getPoints(140);
+        tunnelArr[k].splineMesh.geometry.setFromPoints(tunnelArr[k].splineMesh.geometry.vertices);
 
         // var mydelta = -1*delta* 0.5;
         // var f, p, h, rgb;
@@ -322,7 +330,7 @@ function updateTunnel(){
     
     for (let k = 0; k < tunnelArr.length; k++) {
         tunnelArr[k].material2.map.offset.x += tunnelArr[k].speed;
-        tunnelArr[k].mesh.rotation.z -= 0.005;
+        // tunnelArr[k].mesh.rotation.z -= 0.005;
         if(canchange){
             tunnelArr[k].mesh.rotation.x += (Math.PI / 180 * 0 - tunnelArr[k].mesh.rotation.x) / 30;
             tunnelArr[k].mesh.rotation.y += (Math.PI / 180 * 0 - tunnelArr[k].mesh.rotation.y) / 30;
@@ -510,12 +518,22 @@ function init() {
     tunnelgroup.rotation.x=Math.PI / 180 * 180;
 	scene.add( tunnelgroup );
 
+    tunnelArr.forEach( (obj, index) => {
+        // console.log(obj.splineMesh)
+        // tunnelgroup.children[index].add( obj.splineMesh );
+    })
 
 
     const pointLight = new THREE.PointLight( 0xFFFFFF, 20, 1.5, 2)
     pointLight.position.set(-0.5, 0.5, 0)
     scene.add(pointLight)
-    
+
+    const pointLightLocator = new THREE.Mesh(
+        new THREE.SphereGeometry(0.01),
+        new THREE.MeshNormalMaterial()
+    )
+    pointLightLocator.position.copy(pointLight.position);
+    scene.add(pointLightLocator);
 
 
     // const geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 ); 
