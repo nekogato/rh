@@ -53,7 +53,7 @@ var addTunnelElement = function(url, x, hue){
     var numPoints = 20;
     var radius = 0.08;
     var height = 0.1;
-    var angleStep = Math.PI * 2 / 4;
+    var angleStep = Math.PI * 3 / 7;
     for (i = 0; i < numPoints; i += 1) {
         points.push(new THREE.Vector3(0, 0, 0));
         if(i<6){
@@ -65,13 +65,13 @@ var addTunnelElement = function(url, x, hue){
             oldz = i / 8;
         }else{
             var angle = angleStep * i;
-            var myx = radius * Math.cos(angle)+Math.random()*0.04-0.02;
-            var myy = radius * Math.sin(angle)+Math.random()*0.04-0.02;
+            var myx = radius * Math.cos(angle) + Math.random() * 0.04 - 0.02;
+            var myy = radius * Math.sin(angle) + Math.random() * 0.04 - 0.02;
             
             points[i].y = myy;
             points[i].x = myx;
-            points[i].z = oldz+Math.random()*0.2;
-            oldz=points[i].z;
+            points[i].z = (i != numPoints - 1) ? oldz + Math.random() * 0.2 : 2;
+            oldz = points[i].z;
 
         }
     }
@@ -207,8 +207,10 @@ function updateCurve() {
         var i = 0;
         // var index = 0;
         var vertice = new THREE.Vector3();
+        var normal = new THREE.Vector3();
         // var vertice_o = new THREE.Vector3();
         var positions = [];
+        var normals = [];
         // for (i = 0; i < tunnelArr[k].geometry.vertices.length; i += 1) {
         tunnelArr[k].geometry_o = new THREE.TubeGeometry(tunnelArr[k].curve, 140, 0.02, 30, false);
 
@@ -226,6 +228,11 @@ function updateCurve() {
             tunnelArr[k].geometry.getAttribute("position").array[i*3+1],
             tunnelArr[k].geometry.getAttribute("position").array[i*3+2]
         )
+        normal.set(
+            tunnelArr[k].geometry.getAttribute("normal").array[i*3],
+            tunnelArr[k].geometry.getAttribute("normal").array[i*3+1],
+            tunnelArr[k].geometry.getAttribute("normal").array[i*3+2]
+        )
         // index = Math.floor(i / 31);
         // vertice.x +=
         // (vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x - vertice.x) /
@@ -242,15 +249,27 @@ function updateCurve() {
         
         vertice.x += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3] - vertice.x) / 15;
         vertice.y += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1] - vertice.y) / 15;
+        vertice.z += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2] - vertice.z) / 15;
+
+        normal.x += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3] - normal.x) / 15;
+        normal.y += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3+1] - normal.y) / 15;
+        normal.z += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3+2] - normal.z) / 15;
+
+        // normal.normalize()
 
         positions.push(vertice.x, vertice.y, vertice.z)
+        normals.push(normal.x, normal.y, normal.z)
             
         }
         // tunnelArr[k].geometry.verticesNeedUpdate = true;
         tunnelArr[k].geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(positions), 3));
+        tunnelArr[k].geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(normals), 3));
+        
+        // tunnelArr[k].geometry.computeVertexNormals()
+        // tunnelArr[k].geometry.normalizeNormals();
         
         var numPoints = 20;
-        var radius = 0.08;
+        var radius = 0.02;
         var height = 0.1;
         var angleStep = Math.PI * 2 / 4;
         for (i = 0; i < numPoints; i += 1) {
@@ -258,11 +277,11 @@ function updateCurve() {
                
             }else{
                 var angle = angleStep * i;
-                var myx = radius * Math.cos(angle) + Math.cos(delta)*0.03
-                var myy = radius * Math.sin(angle) + Math.cos(delta)*0.03
+                var myx = radius * Math.sin(delta + i) * Math.random() * 0.03
+                var myy = radius * Math.cos(delta + i * 0.5) * Math.random() * 0.03
                 
-                // tunnelArr[k].curve.points[i].y = myy;
-                // tunnelArr[k].curve.points[i].x = myx;
+                tunnelArr[k].curve.points[i].y += myy;
+                tunnelArr[k].curve.points[i].x += myx;
 
             }
         }
@@ -272,12 +291,16 @@ function updateCurve() {
             tunnelArr[k].curve.points[4].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
             tunnelArr[k].curve.points[5].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
             tunnelArr[k].curve.points[6].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
+            tunnelArr[k].curve.points[7].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
         
             tunnelArr[k].curve.points[4].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
             tunnelArr[k].curve.points[5].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
             tunnelArr[k].curve.points[6].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
+            tunnelArr[k].curve.points[7].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
         
         }
+
+        tunnelArr[k].curve = new THREE.CatmullRomCurve3(tunnelArr[k].curve.points);
 
         // tunnelArr[k].splineMesh.geometry.verticesNeedUpdate = true;
         tunnelArr[k].splineMesh.geometry.vertices = tunnelArr[k].curve.getPoints(140);
