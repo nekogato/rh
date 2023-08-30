@@ -19,6 +19,6 @@ jobs:
         host: ${{ secrets.FTP_SERVER }}
         user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        localDir: /Users/nekogato/Desktop/work/rh
+        localDir: ../
         remoteDir: /domains/nekodeveloper.com/public_html/reimagineheritage/html2
         options: "--delete --asci"
