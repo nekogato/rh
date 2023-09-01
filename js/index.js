@@ -273,31 +273,30 @@ function updateCurve() {
         var height = 0.1;
         var angleStep = Math.PI * 2 / 4;
         for (i = 0; i < numPoints; i += 1) {
-            if(i<6){
+            if ( i < 6 ) {
                
-            }else{
+            } else {
                 var angle = angleStep * i;
                 var myx = radius * Math.sin(delta + i) * Math.random() * 0.03
                 var myy = radius * Math.cos(delta + i * 0.5) * Math.random() * 0.03
                 
-                tunnelArr[k].curve.points[i].y += myy;
-                tunnelArr[k].curve.points[i].x += myx;
+                // tunnelArr[k].curve.points[i].y += myy;
+                // tunnelArr[k].curve.points[i].x += myx;
 
             }
         }
 
 
-        if(k==currenttunnelindex && startanimate){
-            tunnelArr[k].curve.points[4].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[5].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[6].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[7].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
+        if( k == currenttunnelindex && startanimate ) {
+            tunnelArr[k].curve.points[4].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[5].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[6].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[7].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
         
-            tunnelArr[k].curve.points[4].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[5].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[6].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[7].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
-        
+            tunnelArr[k].curve.points[4].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[5].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[6].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[7].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
         }
 
         tunnelArr[k].curve = new THREE.CatmullRomCurve3(tunnelArr[k].curve.points);
@@ -375,7 +374,103 @@ var canchange = true
 var timer;
 var looptimer ;
 var looptimer2 ;
+
+function CustomCursor(){
+    let curX
+    let curY
+    let destX
+    let destY
+    let storedTransition
+    let targetDom = document.createElement("div");
+    targetDom.class = "custom-cursor";
+    targetDom.style = "position: fixed; width: 100px; height: 100px; background-color: #000000; border-radius: 50%; opacity: 0;" +
+        "pointer-events: none;" +
+        // "transition: top 100ms linear, left 100ms linear;" +
+        "transition: transform 200ms ease-out, opacity 500ms ease-out;" +
+        "transform: translate(-50%, -50%); z-index:200";
+    targetDom.style.transform = "translate(" + (50 * (window.innerWidth/100) - 50) + "%, " + (50 * (window.innerHeight/100) - 50) + "%)";
+
+    document.body.append(targetDom);
+
+    const mouseenter = (e) => {
+        // console.log("mouseenter");
+        // console.log(e);
+        if (document.hasFocus()) {
+            mousemove(e)
+            cursorAnimate(false)
+        }
+        targetDom.style.opacity = 1;
+    }
+
+    const mouseleave = (e) => {
+        // console.log("mouseleave")
+        targetDom.style.opacity = 0;
+        curX = undefined
+        curY = undefined
+    }
+
+    const mousemove = (e) => {
+        // console.log("mousemove", e.clientX, e.clientY)
+        if (e.clientX) {
+            destX = e.clientX
+        }
+        if (e.clientY) {
+            destY = e.clientY
+        }
+
+        if (isNaN(curX)) {
+            curX = destX
+            curY = destY
+
+            cursorAnimate(false)
+        }
+        // console.log(curX, curY, destX)
+
+        cursorAnimate()
+    }
+    const cursorAnimate = ( observeTransition ) => {
+        // console.log("cursorAnimate", targetDom.style.transform)
+        // console.log(destX/window.innerWidth*100, destY/window.innerHeight*100)
+
+        // curX += (destX - curX) * 0.3;
+        // curY += (destY - curY) * 0.3;
+        // targetDom.style.left = curX + "px";
+        // targetDom.style.top = curY + "px";
+
+        // targetDom.style.left = destX + "px";
+        // targetDom.style.top = destY + "px";
+
+        if ( observeTransition === false && targetDom.style.transition !== "none") {
+            // console.log(observeTransition)
+            storedTransition = targetDom.style.transition;
+            targetDom.style.transition = "none";
+        } else {
+            if (storedTransition !== undefined) {
+                targetDom.style.transition = storedTransition;
+            }
+        }
+        // console.log(curX, curY)
+        // targetDom.style.transform = "translate(" + (curX/window.innerWidth * 100 * (window.innerWidth/100) - 50) + "%, " + (curY/window.innerHeight * 100 * (window.innerHeight/100) - 50) + "%)";
+        targetDom.style.transform = "translate(" + (destX/window.innerWidth * 100 * (window.innerWidth/100) - 50) + "%, " + (destY/window.innerHeight * 100 * (window.innerHeight/100) - 50) + "%)";
+        targetDom.style.opacity = 1;
+        //console.log("translate(" + destX/window.innerHeight*100 + "%, " + destY/window.innerHeight*100 + "%)");
+
+        // requestAnimationFrame(cursorAnimate)
+    }
+
+    document.getElementsByTagName("html")[0].style.cursor = "none";
+
+    document.addEventListener("mousemove", mousemove)
+    document.addEventListener("mouseenter", mouseenter)
+    document.addEventListener("mouseleave", mouseleave)
+
+    // cursorAnimate()
+    
+}
+
 function init() {
+
+    const customCursor = new CustomCursor();
     
 
     $(".prev_btn").click(function(){
