@@ -381,16 +381,14 @@ function CustomCursor(){
     let destX
     let destY
     let storedTransition
-    let targetDom = document.createElement("div");
-    targetDom.class = "custom-cursor";
-    targetDom.style = "position: fixed; width: 100px; height: 100px; background-color: #000000; border-radius: 50%; opacity: 0;" +
-        "pointer-events: none;" +
-        // "transition: top 100ms linear, left 100ms linear;" +
-        "transition: transform 200ms ease-out, opacity 500ms ease-out;" +
-        "transform: translate(-50%, -50%); z-index:200";
-    targetDom.style.transform = "translate(" + (50 * (window.innerWidth/100) - 50) + "%, " + (50 * (window.innerHeight/100) - 50) + "%)";
-
-    document.body.append(targetDom);
+    let xRatio
+    const _size = 88;
+    // let targetDom = document.createElement("div");
+    // targetDom.classList.add("custom-cursor");
+    // targetDom.innerHTML = "ENTER";
+    // document.body.append(targetDom);
+    let targetDom = document.getElementsByClassName("custom-cursor")[0];
+    targetDom.style.transform = "translate(" + (50 * (window.innerWidth/_size) - 50) + "%, " + (50 * (window.innerHeight/_size) - 50) + "%)";
 
     const mouseenter = (e) => {
         // console.log("mouseenter");
@@ -450,10 +448,30 @@ function CustomCursor(){
             }
         }
         // console.log(curX, curY)
+
+        xRatio = destX/window.innerWidth
+        this.xRatio = xRatio;
         // targetDom.style.transform = "translate(" + (curX/window.innerWidth * 100 * (window.innerWidth/100) - 50) + "%, " + (curY/window.innerHeight * 100 * (window.innerHeight/100) - 50) + "%)";
-        targetDom.style.transform = "translate(" + (destX/window.innerWidth * 100 * (window.innerWidth/100) - 50) + "%, " + (destY/window.innerHeight * 100 * (window.innerHeight/100) - 50) + "%)";
+        targetDom.style.transform = "translate(" + (xRatio * 100 * (window.innerWidth/_size) - 50) + "%, " + (destY/window.innerHeight * 100 * (window.innerHeight/_size) - 50) + "%)";
         targetDom.style.opacity = 1;
         //console.log("translate(" + destX/window.innerHeight*100 + "%, " + destY/window.innerHeight*100 + "%)");
+
+        if (xRatio < 0.25) {
+            targetDom.classList.remove("cursor-enter");
+            targetDom.classList.add("cursor-left");
+            targetDom.classList.remove("cursor-right");
+        } else {
+            if (xRatio > 0.75) {
+                targetDom.classList.remove("cursor-enter");
+                targetDom.classList.remove("cursor-left");
+                targetDom.classList.add("cursor-right");
+            } else {
+                targetDom.classList.add("cursor-enter");
+                targetDom.classList.remove("cursor-left");
+                targetDom.classList.remove("cursor-right");
+            }
+        }
+        
 
         // requestAnimationFrame(cursorAnimate)
     }
@@ -461,17 +479,33 @@ function CustomCursor(){
     document.getElementsByTagName("html")[0].style.cursor = "none";
 
     document.addEventListener("mousemove", mousemove)
-    document.addEventListener("mouseenter", mouseenter)
-    document.addEventListener("mouseleave", mouseleave)
+    // document.addEventListener("mouseenter", mouseenter)
+    // document.addEventListener("mouseleave", mouseleave)
+    document.addEventListener("mouseover", mouseenter)
+    document.addEventListener("mouseout", mouseleave)
 
     // cursorAnimate()
     
 }
 
 function init() {
+    const clickEventHandler = (e) => {
+        if (customCursor.xRatio < 0.25) {
+            currenttunnelindex--;
+            rotateMesh();
+        }
+        if (customCursor.xRatio > 0.75) {
+            currenttunnelindex++;
+            rotateMesh();
+        }
+        if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
+            enterTunnel();
+        }
+    }
 
     const customCursor = new CustomCursor();
-    
+    document.addEventListener("click", clickEventHandler);
+
 
     $(".prev_btn").click(function(){
         currenttunnelindex--;
@@ -545,7 +579,7 @@ function init() {
 
     }
 
-    $(".enter_btn").click(function(){
+    function enterTunnel () {
         clicked = true;
         clearTimeout(looptimer);
         clearTimeout(looptimer2);
@@ -617,7 +651,9 @@ function init() {
         },3000)
 
 
-    });
+    }
+
+    $(".enter_btn").click(enterTunnel);
 
 	camera = new THREE.PerspectiveCamera( 15, window.innerWidth / window.innerHeight, 0.01, 10 );
   	camera.position.set( 0, 0, 2 );
@@ -675,7 +711,7 @@ function init() {
 	renderer.domElement.style.position = 'fixed';
 	renderer.domElement.style.top = 0;
 	document.body.appendChild( renderer.domElement );
-	controls = new THREE.MapControls( camera, renderer.domElement );
+	// controls = new THREE.MapControls( camera, renderer.domElement );
 
     const environment = new THREE.RoomEnvironment( renderer );
     const pmremGenerator = new THREE.PMREMGenerator( renderer );
