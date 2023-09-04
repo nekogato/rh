@@ -457,18 +457,18 @@ function CustomCursor(){
         //console.log("translate(" + destX/window.innerHeight*100 + "%, " + destY/window.innerHeight*100 + "%)");
 
         if (xRatio < 0.25) {
-            targetDom.classList.remove("cursor-enter");
-            targetDom.classList.add("cursor-left");
-            targetDom.classList.remove("cursor-right");
+            targetDom.classList.remove("show-enter");
+            targetDom.classList.add("show-left");
+            targetDom.classList.remove("show-right");
         } else {
             if (xRatio > 0.75) {
-                targetDom.classList.remove("cursor-enter");
-                targetDom.classList.remove("cursor-left");
-                targetDom.classList.add("cursor-right");
+                targetDom.classList.remove("show-enter");
+                targetDom.classList.remove("show-left");
+                targetDom.classList.add("show-right");
             } else {
-                targetDom.classList.add("cursor-enter");
-                targetDom.classList.remove("cursor-left");
-                targetDom.classList.remove("cursor-right");
+                targetDom.classList.add("show-enter");
+                targetDom.classList.remove("show-left");
+                targetDom.classList.remove("show-right");
             }
         }
         

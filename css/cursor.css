@@ -19,23 +19,31 @@
     /* content: " "; */
     background-size: cover;
 }
-.custom-cursor::after {
+.custom-cursor > div {
     display: block;
+    position: absolute;
     content: " ";
     background-size: cover;
     width: 88px; 
     height: 88px;
-    transition: transform 0ms ease-out;
+    transition: transform 500ms ease-out, opacity 500ms ease-out;
+    transform: scale(1);
+    opacity: 1;
 }
-.cursor-left::after {
-    transform: rotateZ(-360deg);
+.cursor-left {
     background-image: url("../img/cursor-left.png");
 }
-.cursor-right::after {
-    transform: rotateZ(360deg);
+.cursor-right {
     background-image: url("../img/cursor-right.png");
 }
-.cursor-enter::after {
-    transform: rotateZ(0deg);
+.cursor-enter {
     background-image: url("../img/cursor-enter.png");
+}
+
+:not(.show-left) > .cursor-left,
+:not(.show-right) > .cursor-right,
+:not(.show-enter) > .cursor-enter {
+    transition: transform 250ms ease-out, opacity 250ms ease-out;
+    transform: scale(1.5);
+    opacity: 0;
 }
