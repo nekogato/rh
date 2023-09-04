@@ -2,7 +2,6 @@
 
 html, body{height:100%; width:100%; }
 img{vertical-align: top;   }
-strong{font-weight:500;}
 em{font-style:italic;}	
 td{vertical-align:top;}
 .clear{float:none; clear:both;}
@@ -701,7 +700,7 @@ h1:first-child,h2:first-child,h3:first-child,h4:first-child,h5:first-child,h6:fi
 
 
 .free_text strong{
-    font-weight: 500;
+    font-weight: 700;
 }
 
 .free_text a{
