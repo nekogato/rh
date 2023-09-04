@@ -53,7 +53,7 @@ var addTunnelElement = function(url, x, hue){
     var numPoints = 20;
     var radius = 0.08;
     var height = 0.1;
-    var angleStep = Math.PI * 2 / 4;
+    var angleStep = Math.PI * 3 / 7;
     for (i = 0; i < numPoints; i += 1) {
         points.push(new THREE.Vector3(0, 0, 0));
         if(i<6){
@@ -65,13 +65,13 @@ var addTunnelElement = function(url, x, hue){
             oldz = i / 8;
         }else{
             var angle = angleStep * i;
-            var myx = radius * Math.cos(angle)+Math.random()*0.04-0.02;
-            var myy = radius * Math.sin(angle)+Math.random()*0.04-0.02;
+            var myx = radius * Math.cos(angle) + Math.random() * 0.04 - 0.02;
+            var myy = radius * Math.sin(angle) + Math.random() * 0.04 - 0.02;
             
             points[i].y = myy;
             points[i].x = myx;
-            points[i].z = oldz+Math.random()*0.2;
-            oldz=points[i].z;
+            points[i].z = (i != numPoints - 1) ? oldz + Math.random() * 0.2 : 2;
+            oldz = points[i].z;
 
         }
     }
@@ -115,7 +115,9 @@ var addTunnelElement = function(url, x, hue){
 
     var geometry = new THREE.BufferGeometry();
     geometry.vertices = curve.getPoints(140);
-    var splineMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial());
+    geometry.setFromPoints(geometry.vertices);
+    var splineMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFF0000, depthTest: false, depthWrite: false}));
+    splineMesh.renderOrder = 1
 
 	var tubeTexture = new THREE.TextureLoader().load(url);
 
@@ -161,6 +163,7 @@ var addTunnelElement = function(url, x, hue){
                 hue) +
             ",140%,60%)"
         );
+        color.convertSRGBToLinear();
         // f.color = color;
         tubeColors[i * 3] = color.r;
         tubeColors[i * 3 + 1] = color.g;
@@ -202,26 +205,35 @@ var addTunnelElement = function(url, x, hue){
 function updateCurve() {
     for (let k = 0; k < tunnelArr.length; k++) {
         var i = 0;
-        var index = 0;
+        // var index = 0;
         var vertice = new THREE.Vector3();
-        var vertice_o = new THREE.Vector3();
+        var normal = new THREE.Vector3();
+        // var vertice_o = new THREE.Vector3();
         var positions = [];
+        var normals = [];
         // for (i = 0; i < tunnelArr[k].geometry.vertices.length; i += 1) {
+        tunnelArr[k].geometry_o = new THREE.TubeGeometry(tunnelArr[k].curve, 140, 0.02, 30, false);
+
         for (i = 0; i < tunnelArr[k].geometry.getAttribute("position").count; i+= 1) {
         
         // vertice_o =  tunnelArr[k].geometry_o.vertices[i];
         // vertice = tunnelArr[k].geometry.vertices[i];
-        vertice_o.set(
-            tunnelArr[k].geometry_o.getAttribute("position").array[i*3],
-            tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1],
-            tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2]
-        )
+        // vertice_o.set(
+        //     tunnelArr[k].geometry_o.getAttribute("position").array[i*3],
+        //     tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1],
+        //     tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2]
+        // )
         vertice.set(
             tunnelArr[k].geometry.getAttribute("position").array[i*3],
             tunnelArr[k].geometry.getAttribute("position").array[i*3+1],
             tunnelArr[k].geometry.getAttribute("position").array[i*3+2]
         )
-        index = Math.floor(i / 31);
+        normal.set(
+            tunnelArr[k].geometry.getAttribute("normal").array[i*3],
+            tunnelArr[k].geometry.getAttribute("normal").array[i*3+1],
+            tunnelArr[k].geometry.getAttribute("normal").array[i*3+2]
+        )
+        // index = Math.floor(i / 31);
         // vertice.x +=
         // (vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x - vertice.x) /
         // 10;
@@ -231,48 +243,67 @@ function updateCurve() {
         
         //
         
-        vertice.x += ((vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x) - vertice.x) / 15;
-        vertice.y += ((vertice_o.y + tunnelArr[k].splineMesh.geometry.vertices[index].y) - vertice.y) / 15;
+        // vertice.x += ((vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x) - vertice.x) / 15;
+        // vertice.y += ((vertice_o.y + tunnelArr[k].splineMesh.geometry.vertices[index].y) - vertice.y) / 15;
         //vertice.applyAxisAngle(new THREE.Vector3(0,0,1), Math.abs(Math.cos(delta*0.001+vertice.z*5))*0.1);
         
+        vertice.x += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3] - vertice.x) / 15;
+        vertice.y += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1] - vertice.y) / 15;
+        vertice.z += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2] - vertice.z) / 15;
+
+        normal.x += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3] - normal.x) / 15;
+        normal.y += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3+1] - normal.y) / 15;
+        normal.z += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3+2] - normal.z) / 15;
+
+        // normal.normalize()
+
         positions.push(vertice.x, vertice.y, vertice.z)
+        normals.push(normal.x, normal.y, normal.z)
             
         }
         // tunnelArr[k].geometry.verticesNeedUpdate = true;
         tunnelArr[k].geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(positions), 3));
+        tunnelArr[k].geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(normals), 3));
+        
+        // tunnelArr[k].geometry.computeVertexNormals()
+        // tunnelArr[k].geometry.normalizeNormals();
         
         var numPoints = 20;
-        var radius = 0.08;
+        var radius = 0.02;
         var height = 0.1;
         var angleStep = Math.PI * 2 / 4;
         for (i = 0; i < numPoints; i += 1) {
-            if(i<6){
+            if ( i < 6 ) {
                
-            }else{
+            } else {
                 var angle = angleStep * i;
-                var myx = radius * Math.cos(angle) + Math.cos(delta)*0.03
-                var myy = radius * Math.sin(angle) + Math.cos(delta)*0.03
+                var myx = radius * Math.sin(delta + i) * Math.random() * 0.03
+                var myy = radius * Math.cos(delta + i * 0.5) * Math.random() * 0.03
                 
-                // tunnelArr[k].curve.points[i].y = myy;
-                // tunnelArr[k].curve.points[i].x = myx;
+                // tunnelArr[k].curve.points[i].y += myy;
+                // tunnelArr[k].curve.points[i].x += myx;
 
             }
         }
 
 
-        if(k==currenttunnelindex && startanimate){
-            tunnelArr[k].curve.points[4].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[5].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[6].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta))*0.04;
+        if( k == currenttunnelindex && startanimate ) {
+            tunnelArr[k].curve.points[4].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[5].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[6].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[7].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
         
-            tunnelArr[k].curve.points[4].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[5].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
-            tunnelArr[k].curve.points[6].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta))*0.04;
-        
+            tunnelArr[k].curve.points[4].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[5].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[6].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
+            tunnelArr[k].curve.points[7].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
         }
 
-        tunnelArr[k].splineMesh.geometry.verticesNeedUpdate = true;
+        tunnelArr[k].curve = new THREE.CatmullRomCurve3(tunnelArr[k].curve.points);
+
+        // tunnelArr[k].splineMesh.geometry.verticesNeedUpdate = true;
         tunnelArr[k].splineMesh.geometry.vertices = tunnelArr[k].curve.getPoints(140);
+        tunnelArr[k].splineMesh.geometry.setFromPoints(tunnelArr[k].splineMesh.geometry.vertices);
 
         // var mydelta = -1*delta* 0.5;
         // var f, p, h, rgb;
@@ -321,7 +352,7 @@ function updateTunnel(){
     
     for (let k = 0; k < tunnelArr.length; k++) {
         tunnelArr[k].material2.map.offset.x += tunnelArr[k].speed;
-        tunnelArr[k].mesh.rotation.z -= 0.005;
+        // tunnelArr[k].mesh.rotation.z -= 0.005;
         if(canchange){
             tunnelArr[k].mesh.rotation.x += (Math.PI / 180 * 0 - tunnelArr[k].mesh.rotation.x) / 30;
             tunnelArr[k].mesh.rotation.y += (Math.PI / 180 * 0 - tunnelArr[k].mesh.rotation.y) / 30;
@@ -343,8 +374,138 @@ var canchange = true
 var timer;
 var looptimer ;
 var looptimer2 ;
-function init() {
+
+function CustomCursor(){
+    let curX
+    let curY
+    let destX
+    let destY
+    let storedTransition
+    let xRatio
+    const _size = 88;
+    // let targetDom = document.createElement("div");
+    // targetDom.classList.add("custom-cursor");
+    // targetDom.innerHTML = "ENTER";
+    // document.body.append(targetDom);
+    let targetDom = document.getElementsByClassName("custom-cursor")[0];
+    targetDom.style.transform = "translate(" + (50 * (window.innerWidth/_size) - 50) + "%, " + (50 * (window.innerHeight/_size) - 50) + "%)";
+
+    const mouseenter = (e) => {
+        // console.log("mouseenter");
+        // console.log(e);
+        if (document.hasFocus()) {
+            mousemove(e)
+            cursorAnimate(false)
+        }
+        targetDom.style.opacity = 1;
+    }
+
+    const mouseleave = (e) => {
+        // console.log("mouseleave")
+        targetDom.style.opacity = 0;
+        curX = undefined
+        curY = undefined
+    }
+
+    const mousemove = (e) => {
+        // console.log("mousemove", e.clientX, e.clientY)
+        if (e.clientX) {
+            destX = e.clientX
+        }
+        if (e.clientY) {
+            destY = e.clientY
+        }
+
+        if (isNaN(curX)) {
+            curX = destX
+            curY = destY
+
+            cursorAnimate(false)
+        }
+        // console.log(curX, curY, destX)
+
+        cursorAnimate()
+    }
+    const cursorAnimate = ( observeTransition ) => {
+        // console.log("cursorAnimate", targetDom.style.transform)
+        // console.log(destX/window.innerWidth*100, destY/window.innerHeight*100)
+
+        // curX += (destX - curX) * 0.3;
+        // curY += (destY - curY) * 0.3;
+        // targetDom.style.left = curX + "px";
+        // targetDom.style.top = curY + "px";
+
+        // targetDom.style.left = destX + "px";
+        // targetDom.style.top = destY + "px";
+
+        if ( observeTransition === false && targetDom.style.transition !== "none") {
+            // console.log(observeTransition)
+            storedTransition = targetDom.style.transition;
+            targetDom.style.transition = "none";
+        } else {
+            if (storedTransition !== undefined) {
+                targetDom.style.transition = storedTransition;
+            }
+        }
+        // console.log(curX, curY)
+
+        xRatio = destX/window.innerWidth
+        this.xRatio = xRatio;
+        // targetDom.style.transform = "translate(" + (curX/window.innerWidth * 100 * (window.innerWidth/100) - 50) + "%, " + (curY/window.innerHeight * 100 * (window.innerHeight/100) - 50) + "%)";
+        targetDom.style.transform = "translate(" + (xRatio * 100 * (window.innerWidth/_size) - 50) + "%, " + (destY/window.innerHeight * 100 * (window.innerHeight/_size) - 50) + "%)";
+        targetDom.style.opacity = 1;
+        //console.log("translate(" + destX/window.innerHeight*100 + "%, " + destY/window.innerHeight*100 + "%)");
+
+        if (xRatio < 0.25) {
+            targetDom.classList.remove("cursor-enter");
+            targetDom.classList.add("cursor-left");
+            targetDom.classList.remove("cursor-right");
+        } else {
+            if (xRatio > 0.75) {
+                targetDom.classList.remove("cursor-enter");
+                targetDom.classList.remove("cursor-left");
+                targetDom.classList.add("cursor-right");
+            } else {
+                targetDom.classList.add("cursor-enter");
+                targetDom.classList.remove("cursor-left");
+                targetDom.classList.remove("cursor-right");
+            }
+        }
+        
+
+        // requestAnimationFrame(cursorAnimate)
+    }
+
+    document.getElementsByTagName("html")[0].style.cursor = "none";
+
+    document.addEventListener("mousemove", mousemove)
+    // document.addEventListener("mouseenter", mouseenter)
+    // document.addEventListener("mouseleave", mouseleave)
+    document.addEventListener("mouseover", mouseenter)
+    document.addEventListener("mouseout", mouseleave)
+
+    // cursorAnimate()
     
+}
+
+function init() {
+    const clickEventHandler = (e) => {
+        if (customCursor.xRatio < 0.25) {
+            currenttunnelindex--;
+            rotateMesh();
+        }
+        if (customCursor.xRatio > 0.75) {
+            currenttunnelindex++;
+            rotateMesh();
+        }
+        if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
+            enterTunnel();
+        }
+    }
+
+    const customCursor = new CustomCursor();
+    document.addEventListener("click", clickEventHandler);
+
 
     $(".prev_btn").click(function(){
         currenttunnelindex--;
@@ -418,7 +579,7 @@ function init() {
 
     }
 
-    $(".enter_btn").click(function(){
+    function enterTunnel () {
         clicked = true;
         clearTimeout(looptimer);
         clearTimeout(looptimer2);
@@ -490,13 +651,15 @@ function init() {
         },3000)
 
 
-    });
+    }
+
+    $(".enter_btn").click(enterTunnel);
 
 	camera = new THREE.PerspectiveCamera( 15, window.innerWidth / window.innerHeight, 0.01, 10 );
   	camera.position.set( 0, 0, 2 );
 	scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xc8c8c8, 2, 2.5);
-	scene.background = new THREE.Color( 0xc8c8c8 );
+    scene.fog = new THREE.Fog(0xb0b0b0, 2, 2.5);        // 0xc8c8c8
+	scene.background = new THREE.Color( 0xb0b0b0 );     // 0xc8c8c8
 
     
 	tunnelgroup = new THREE.Group();
@@ -508,7 +671,23 @@ function init() {
     tunnelgroup.position.z=1.5;
     tunnelgroup.rotation.x=Math.PI / 180 * 180;
 	scene.add( tunnelgroup );
-    
+
+    tunnelArr.forEach( (obj, index) => {
+        // console.log(obj.splineMesh)
+        // tunnelgroup.children[index].add( obj.splineMesh );
+    })
+
+
+    const pointLight = new THREE.PointLight( 0xFFFFFF, 20, 1.5, 2)
+    pointLight.position.set(-0.5, 0.5, 0)
+    scene.add(pointLight)
+
+    const pointLightLocator = new THREE.Mesh(
+        new THREE.SphereGeometry(0.01),
+        new THREE.MeshNormalMaterial()
+    )
+    pointLightLocator.position.copy(pointLight.position);
+    scene.add(pointLightLocator);
 
 
     // const geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 ); 
@@ -532,7 +711,7 @@ function init() {
 	renderer.domElement.style.position = 'fixed';
 	renderer.domElement.style.top = 0;
 	document.body.appendChild( renderer.domElement );
-	controls = new THREE.MapControls( camera, renderer.domElement );
+	// controls = new THREE.MapControls( camera, renderer.domElement );
 
     const environment = new THREE.RoomEnvironment( renderer );
     const pmremGenerator = new THREE.PMREMGenerator( renderer );
@@ -540,7 +719,7 @@ function init() {
 
     // renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMapping = THREE.CineonToneMapping;
-    renderer.toneMappingExposure = 1.5;
+    renderer.toneMappingExposure = 2;
 
 	mouseX = 0;
 	mouseY = 0;
