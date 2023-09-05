@@ -251,6 +251,12 @@ function statechange(){
 
 				var body = $("html, body");
 				body.stop().animate({scrollTop:0}, 300, 'swing', function() { });
+
+				if($(".black_content").length){
+					$("body").addClass("black_body")
+				}else{
+					$("body").removeClass("black_body")
+				}
 				
 				
 				setTimeout(function(){
