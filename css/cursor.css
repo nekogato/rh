@@ -26,7 +26,7 @@
     background-size: cover;
     width: 88px; 
     height: 88px;
-    transition: transform 500ms ease-out, opacity 500ms ease-out;
+    transition: transform 200ms ease-out, opacity 200ms ease-out;
     transform: scale(1);
     opacity: 1;
 }
@@ -43,7 +43,7 @@
 :not(.show-left) > .cursor-left,
 :not(.show-right) > .cursor-right,
 :not(.show-enter) > .cursor-enter {
-    transition: transform 250ms ease-out, opacity 250ms ease-out;
+    transition: transform 100ms ease-out, opacity 100ms ease-out;
     transform: scale(1.5);
     opacity: 0;
 }

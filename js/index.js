@@ -66,7 +66,7 @@ var addTunnelElement = function(url, x, hue){
         }else{
             var angle = angleStep * i;
             var myx = radius * Math.cos(angle) + Math.random() * 0.04 - 0.02;
-            var myy = radius * Math.sin(angle) + Math.random() * 0.04 - 0.02;
+            var myy = radius * Math.sin(angle) + Math.random() * 0.04 - 0.02 + i * 0.02;
             
             points[i].y = myy;
             points[i].x = myx;
@@ -757,13 +757,20 @@ function updateCameraPosition () {
   
     mouseGlobal.ratio.x = mouseGlobal.position.x / ww;
     mouseGlobal.ratio.y = mouseGlobal.position.y / wh;
-    if(canchange){
-        camera.rotation.z += (Math.PI / 180 * 0 - camera.rotation.z) / 30;
-    }else{
-        camera.rotation.z += (Math.PI / 180 * 45 - camera.rotation.z) / 30;
-    }
+    // if(canchange){
+    //     camera.rotation.z += (Math.PI / 180 * 0 - camera.rotation.z) / 30;
+    // }else{
+    //     camera.rotation.z += (Math.PI / 180 * 45 - camera.rotation.z) / 30;
+    // }
     // camera.rotation.y = Math.PI - (mouseGlobal.ratio.x * 0.4 - 0.2);
     // camera.position.y = mouseGlobal.ratio.y * 0.4 - 0.2;
+    if (canchange) {
+        camera.position.x = (mouseGlobal.ratio.x - 0.5) * 0.025;
+        camera.position.y = (mouseGlobal.ratio.y - 0.5) * -0.0125;
+    } else {
+        // camera.position.x = 0;
+        // camera.position.y = 0;
+    }
   };
 
 function animate() {
