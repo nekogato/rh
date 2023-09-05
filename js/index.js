@@ -66,7 +66,7 @@ var addTunnelElement = function(url, x, hue){
         }else{
             var angle = angleStep * i;
             var myx = radius * Math.cos(angle) + Math.random() * 0.04 - 0.02;
-            var myy = radius * Math.sin(angle) + Math.random() * 0.04 - 0.02;
+            var myy = radius * Math.sin(angle) + Math.random() * 0.04 - 0.02 + i * 0.02;
             
             points[i].y = myy;
             points[i].x = myx;
@@ -457,18 +457,18 @@ function CustomCursor(){
         //console.log("translate(" + destX/window.innerHeight*100 + "%, " + destY/window.innerHeight*100 + "%)");
 
         if (xRatio < 0.25) {
-            targetDom.classList.remove("cursor-enter");
-            targetDom.classList.add("cursor-left");
-            targetDom.classList.remove("cursor-right");
+            targetDom.classList.remove("show-enter");
+            targetDom.classList.add("show-left");
+            targetDom.classList.remove("show-right");
         } else {
             if (xRatio > 0.75) {
-                targetDom.classList.remove("cursor-enter");
-                targetDom.classList.remove("cursor-left");
-                targetDom.classList.add("cursor-right");
+                targetDom.classList.remove("show-enter");
+                targetDom.classList.remove("show-left");
+                targetDom.classList.add("show-right");
             } else {
-                targetDom.classList.add("cursor-enter");
-                targetDom.classList.remove("cursor-left");
-                targetDom.classList.remove("cursor-right");
+                targetDom.classList.add("show-enter");
+                targetDom.classList.remove("show-left");
+                targetDom.classList.remove("show-right");
             }
         }
         
@@ -757,13 +757,20 @@ function updateCameraPosition () {
   
     mouseGlobal.ratio.x = mouseGlobal.position.x / ww;
     mouseGlobal.ratio.y = mouseGlobal.position.y / wh;
-    if(canchange){
-        camera.rotation.z += (Math.PI / 180 * 0 - camera.rotation.z) / 30;
-    }else{
-        camera.rotation.z += (Math.PI / 180 * 45 - camera.rotation.z) / 30;
-    }
+    // if(canchange){
+    //     camera.rotation.z += (Math.PI / 180 * 0 - camera.rotation.z) / 30;
+    // }else{
+    //     camera.rotation.z += (Math.PI / 180 * 45 - camera.rotation.z) / 30;
+    // }
     // camera.rotation.y = Math.PI - (mouseGlobal.ratio.x * 0.4 - 0.2);
     // camera.position.y = mouseGlobal.ratio.y * 0.4 - 0.2;
+    if (canchange) {
+        camera.position.x = (mouseGlobal.ratio.x - 0.5) * 0.025;
+        camera.position.y = (mouseGlobal.ratio.y - 0.5) * -0.0125;
+    } else {
+        // camera.position.x = 0;
+        // camera.position.y = 0;
+    }
   };
 
 function animate() {
