@@ -1,16 +1,16 @@
 .custom-cursor {
     position: fixed; 
-    width: 88px; 
-    height: 88px; 
+    width: 512px; 
+    height: 512px; 
     /* background-color: #b0b0b0; */
-    background-color: rgba(176, 176, 176, 0.9);
+    /* background-color: rgba(176, 176, 176, 0.9);
     border-radius: 50%; 
     border: 1px solid #000000;
     line-height: 88px;
     font-size: 18px;
     color: #000000;
-    text-align: center;
-    opacity: 0;
+    text-align: center; */
+    opacity: 1;
     pointer-events: none;
     transition: transform 200ms ease-out, opacity 500ms ease-out;
     transform: translate(-50%, -50%);
@@ -19,7 +19,15 @@
     /* content: " "; */
     background-size: cover;
 }
-.custom-cursor > div {
+
+.custom-cursor.hide {
+    opacity: 0;
+}
+
+.custom-cursor.disable {
+    opacity: 0;
+}
+/* .custom-cursor > div {
     display: block;
     position: absolute;
     content: " ";
@@ -27,7 +35,30 @@
     width: 88px; 
     height: 88px;
     transition: transform 200ms ease-out, opacity 200ms ease-out;
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
+    left: 50%;
+    top: 50%;
+    opacity: 1;
+} */
+
+.cursor-sizer {
+    position: absolute;
+    width: 512px;
+    height: 512px;
+    transition: transform 200ms;
+}
+
+.center-wrapper .cursor-left, .center-wrapper .cursor-right, .center-wrapper .cursor-enter {
+    display: block;
+    position: absolute;
+    content: " ";
+    background-size: cover;
+    width: 88px; 
+    height: 88px;
+    transition: transform 200ms ease-out, opacity 200ms ease-out;
+    transform: translate( -50%, -50%) scale(1);
+    left: 50%;
+    top: 50%;
     opacity: 1;
 }
 .cursor-left {
@@ -40,10 +71,78 @@
     background-image: url("../img/cursor-enter.png");
 }
 
-:not(.show-left) > .cursor-left,
-:not(.show-right) > .cursor-right,
-:not(.show-enter) > .cursor-enter {
+:not(.show-left) > div > div > .cursor-left,
+:not(.show-right) > div > div > .cursor-right,
+:not(.show-enter) > div > div > .cursor-enter {
     transition: transform 100ms ease-out, opacity 100ms ease-out;
-    transform: scale(1.5);
+    transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
+}
+
+.custom-cursor > div > .cursor-project-plate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    /* transform: translate(-50%, -50%); */
+    font-family: 'OT Missouri 16mm';
+    text-align: center;
+}
+
+.custom-cursor > div > .center-wrapper {
+    position: fixed;
+    z-index: 201;
+    width: 88px;
+    height: 88px;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    background-color: rgba(176, 176, 176, 0.9);
+    border-radius: 50%; 
+    border: 1px solid #000000;
+    overflow: hidden;
+    transition: width 500ms, height 500ms;
+    box-sizing: border-box;
+}
+.show-left > div > .center-wrapper,
+.show-enter > div > .center-wrapper,
+.show-right > div > .center-wrapper {
+    width: 88px;
+    height: 88px;
+}
+.show-project > div > .center-wrapper {
+    width: 512px;
+    height: 512px;
+}
+.show-transition > div > .center-wrapper {
+    width: 16px;
+    height: 16px;
+}
+.cursor-project-plate {
+    position: absolute;
+    width: 512px;
+    height: 512px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'OT Missouri 16mm';
+    text-align: center;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    transition: all 500ms;
+    /* transition: all 500ms, transform 2s; */
+}
+.cursor-project-plate > h1 {
+    margin-top: 0px;
+}
+:not(.show-project) > div > div > .cursor-project-plate {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.17185);
+}
+
+.custom-cursor.clicked > .cursor-sizer{
+    transform: scale(0.9);
+    transition: transform 50ms;
 }

@@ -7,8 +7,10 @@
 		<meta name="description" content="Infinite WebGL tubes as seen on Fornasetti.com made with Three.js" />
 		<meta name="keywords" content="webgl, effect, tube, infinite, interactive, threejs, background, canvas" />
 		<meta name="author" content="Louis Hoebregts for Codrops" />
+		<link href="fonts/stylesheet.css" rel="stylesheet" type="text/css">
 		<link rel="shortcut icon" href="favicon.ico">
 		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
 		<link rel="stylesheet" type="text/css" href="css/cursor.css" />
 		<script>document.documentElement.className = 'js';</script>
 		<style>
@@ -78,10 +80,15 @@
 		<!-- <div class="enter_btn">進入</div> -->
 		<!-- <div class="prev_btn">上一個</div> -->
 		<!-- <div class="next_btn">下一個</div> -->
-		<div class="custom-cursor">
-			<div class="cursor-left"></div>
-			<div class="cursor-enter"></div>
-			<div class="cursor-right"></div>
+		<div class="custom-cursor hide">
+			<div class="cursor-sizer">
+				<div class="center-wrapper">
+					<div class="cursor-left"></div>
+					<div class="cursor-enter"></div>
+					<div class="cursor-right"></div>
+					<div class="content_title_wrapper cursor-project-plate"></div>
+				</div>
+			</div>
 		</div>
 		<script src="js/lib/jquery.min.js"></script>
 		<script src="js/lib/gsap.min.js"></script>
