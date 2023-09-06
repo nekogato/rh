@@ -17,7 +17,7 @@ var mouseGlobal = {
     ratio: new THREE.Vector2(0, 0),
     target: new THREE.Vector2(ww * 0.5, wh * 0.5)
 };
-var doRotateMesh;
+var doRotateMesh, doClearRotateMeshTimeout;
 var isUpdateDisabled = false;
 
 var logo1;
@@ -532,6 +532,8 @@ function CustomCursor() {
 }
 
 const haltUpdate = () => {
+    doClearRotateMeshTimeout()
+    
     customCursor.targetDom.classList.add("disable");
     customCursor.disable = true;
 
@@ -540,9 +542,11 @@ const haltUpdate = () => {
 }
 
 const resumeUpdate = () => {
+    customCursor.targetDom.classList.add('show-transition');
+
     customCursor.targetDom.classList.remove("disable");
     customCursor.disable = false;
-    
+
     isUpdateDisabled = false;
     document.getElementsByTagName("html")[0].style.cursor = "none";
 
@@ -586,10 +590,12 @@ function init() {
 
             if (clicked) {
                 if (customCursor.targetDom.classList.contains("show-project")) {
+                    customCursor.targetDom.classList.add('show-transition');
+                    customCursor.targetDom.classList.remove('show-project');
                     prepareToShowProject();
                 }
             } else {
-                console.log("enterTunnel")
+                // console.log("enterTunnel")
                 enterTunnel();
             }
         }
@@ -611,10 +617,17 @@ function init() {
         rotateMesh();
     })
 
-    function rotateMesh(){
+    function clearRotateMeshTimeout() {
         clearTimeout(looptimer);
         clearTimeout(looptimer2);
         clearTimeout(timer);
+    }
+
+    function rotateMesh(){
+        clearRotateMeshTimeout();
+        // clearTimeout(looptimer);
+        // clearTimeout(looptimer2);
+        // clearTimeout(timer);
         startanimate=false
         canchange=false;
         //tunnelArr[currenttunnelindex].mesh.rotation.x = (Math.PI / 180 * 90 ) ;
@@ -650,6 +663,7 @@ function init() {
             customCursor.targetDom.classList.remove("show-right");
             customCursor.targetDom.classList.add("show-transition");
 
+            logo1.classList.remove("in-tunnel");
             gsap.to(tunnelgroup.position, {
                 duration: 3,
                 y: 0, 
@@ -657,14 +671,14 @@ function init() {
                 ease: Power1.easeInOut,
             });
             setTimeout(function(){
-                // customCursor.targetDom.classList.remove("show-project");
-                customCursor.targetDom.classList.remove("show-transition");
-                customCursor.cursorAnimate();
-
                 gsap.to(tunnelgroup.position, {
                     duration: 3,
                     x: -currenttunnelindex*spacing, 
                     ease: Power1.easeInOut,
+                    onComplete: function() {
+                        customCursor.targetDom.classList.remove("show-transition");
+                        customCursor.cursorAnimate();
+                    }
                 });
             },3000)
             clicked=false;
@@ -698,6 +712,7 @@ function init() {
             if(clicked){
                 
                 looptimer = setTimeout(function(){
+                    logo1.classList.add("in-tunnel");
                     gsap.to(tunnelArr[currenttunnelindex], {
                         duration: 4,
                         repeatX: 0.5, 
@@ -756,6 +771,7 @@ function init() {
         }
 
         doRotateMesh = rotateMesh;
+        doClearRotateMeshTimeout = clearRotateMeshTimeout;
 
         animate1();
 
