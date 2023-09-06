@@ -16,7 +16,18 @@ var mouseGlobal = {
     position: new THREE.Vector2(ww * 0.5, wh * 0.5),
     ratio: new THREE.Vector2(0, 0),
     target: new THREE.Vector2(ww * 0.5, wh * 0.5)
-  };
+};
+var doRotateMesh, doClearRotateMeshTimeout;
+var isUpdateDisabled = false;
+
+var logo1;
+const projectTitles = [
+    `<h1 class="text1">Confidential<br>Records<br>●<br>Vvzela Kook</h1>`,
+    `<h1 class="text1">The Lost<br>Metropolis State Theatre<br>●<br>Shiu Ka Heng</h1>`,
+    `<h1 class="text1">Confidential<br>Records<br>●<br>Vvzela Kook</h1>`,
+    `<h1 class="text1">The Lost<br>Metropolis State Theatre<br>●<br>Shiu Ka Heng</h1>`,
+]
+// console.log(projectTitles)
 var addTunnelElement = function(url, x, hue){
     var points = [];
     var i = 0;
@@ -374,21 +385,26 @@ var canchange = true
 var timer;
 var looptimer ;
 var looptimer2 ;
+var customCursor;
 
-function CustomCursor(){
+function CustomCursor() {
     let curX
     let curY
     let destX
     let destY
     let storedTransition
     let xRatio
-    const _size = 88;
+    const _size = 512;
     // let targetDom = document.createElement("div");
     // targetDom.classList.add("custom-cursor");
     // targetDom.innerHTML = "ENTER";
     // document.body.append(targetDom);
     let targetDom = document.getElementsByClassName("custom-cursor")[0];
     targetDom.style.transform = "translate(" + (50 * (window.innerWidth/_size) - 50) + "%, " + (50 * (window.innerHeight/_size) - 50) + "%)";
+    this.targetDom = targetDom;
+
+    let projectPlate = targetDom.getElementsByClassName("cursor-project-plate")[0];
+    this.projectPlate = projectPlate;
 
     const mouseenter = (e) => {
         // console.log("mouseenter");
@@ -397,12 +413,14 @@ function CustomCursor(){
             mousemove(e)
             cursorAnimate(false)
         }
-        targetDom.style.opacity = 1;
+        // targetDom.style.opacity = 1;
+        targetDom.classList.remove("hide");
     }
 
     const mouseleave = (e) => {
         // console.log("mouseleave")
-        targetDom.style.opacity = 0;
+        // targetDom.style.opacity = 0;
+        targetDom.classList.add("hide");
         curX = undefined
         curY = undefined
     }
@@ -427,6 +445,8 @@ function CustomCursor(){
         cursorAnimate()
     }
     const cursorAnimate = ( observeTransition ) => {
+        if (customCursor.disable) return
+
         // console.log("cursorAnimate", targetDom.style.transform)
         // console.log(destX/window.innerWidth*100, destY/window.innerHeight*100)
 
@@ -453,28 +473,51 @@ function CustomCursor(){
         this.xRatio = xRatio;
         // targetDom.style.transform = "translate(" + (curX/window.innerWidth * 100 * (window.innerWidth/100) - 50) + "%, " + (curY/window.innerHeight * 100 * (window.innerHeight/100) - 50) + "%)";
         targetDom.style.transform = "translate(" + (xRatio * 100 * (window.innerWidth/_size) - 50) + "%, " + (destY/window.innerHeight * 100 * (window.innerHeight/_size) - 50) + "%)";
-        targetDom.style.opacity = 1;
+        // targetDom.style.opacity = 1;
+        targetDom.classList.remove("hide");
         //console.log("translate(" + destX/window.innerHeight*100 + "%, " + destY/window.innerHeight*100 + "%)");
 
-        if (xRatio < 0.25) {
-            targetDom.classList.remove("show-enter");
-            targetDom.classList.add("show-left");
-            targetDom.classList.remove("show-right");
-        } else {
-            if (xRatio > 0.75) {
-                targetDom.classList.remove("show-enter");
-                targetDom.classList.remove("show-left");
-                targetDom.classList.add("show-right");
+        if (!targetDom.classList.contains("show-transition")) {
+            if (clicked) {
+                if (xRatio < 0.25) {
+                    targetDom.classList.remove("show-project");
+                    targetDom.classList.add("show-left");
+                    targetDom.classList.remove("show-right");
+                } else {
+                    if (xRatio > 0.75) {
+                        targetDom.classList.remove("show-project");
+                        targetDom.classList.remove("show-left");
+                        targetDom.classList.add("show-right"); 
+                    } else {
+                        targetDom.classList.add("show-project");
+                        targetDom.classList.remove("show-left");
+                        targetDom.classList.remove("show-right");
+                    }
+                }
             } else {
-                targetDom.classList.add("show-enter");
-                targetDom.classList.remove("show-left");
-                targetDom.classList.remove("show-right");
+                if (xRatio < 0.25) {
+                    targetDom.classList.remove("show-enter");
+                    targetDom.classList.add("show-left");
+                    targetDom.classList.remove("show-right");
+                } else {
+                    if (xRatio > 0.75) {
+                        targetDom.classList.remove("show-enter");
+                        targetDom.classList.remove("show-left");
+                        targetDom.classList.add("show-right");
+                    } else {
+                        targetDom.classList.add("show-enter");
+                        targetDom.classList.remove("show-left");
+                        targetDom.classList.remove("show-right");
+                    }
+                }
             }
         }
         
 
         // requestAnimationFrame(cursorAnimate)
     }
+    
+    this.cursorAnimate = cursorAnimate;
 
     document.getElementsByTagName("html")[0].style.cursor = "none";
 
@@ -488,8 +531,51 @@ function CustomCursor(){
     
 }
 
+const haltUpdate = () => {
+    doClearRotateMeshTimeout()
+    
+    customCursor.targetDom.classList.add("disable");
+    customCursor.disable = true;
+
+    isUpdateDisabled = true;
+    document.getElementsByTagName("html")[0].style.cursor = "";
+}
+
+const resumeUpdate = () => {
+    customCursor.targetDom.classList.add('show-transition');
+
+    customCursor.targetDom.classList.remove("disable");
+    customCursor.disable = false;
+
+    isUpdateDisabled = false;
+    document.getElementsByTagName("html")[0].style.cursor = "none";
+
+    animate();
+
+    gsap.to( logo1, { duration: 1, opacity: 1 });
+    gsap.to( renderer.domElement, { duration: 1, opacity: 1, onComplete: doRotateMesh} );
+}
+
+const showProject = () => {
+    console.log('SHOW PROJECT!!!!')
+}
+const prepareToShowProjectComplete = () => {
+    haltUpdate();
+    showProject();
+}
+const prepareToShowProject = () => {
+    gsap.to( logo1, { duration: 2, opacity: 0 });
+    gsap.to( renderer.domElement, { duration: 2, opacity: 0, onComplete: prepareToShowProjectComplete });
+
+}
+
 function init() {
     const clickEventHandler = (e) => {
+        if (customCursor.disable) return
+
+        customCursor.targetDom.classList.add("clicked");
+        setTimeout( () => {customCursor.targetDom.classList.remove("clicked");}, 250);
+        
         if (customCursor.xRatio < 0.25) {
             currenttunnelindex--;
             rotateMesh();
@@ -499,12 +585,26 @@ function init() {
             rotateMesh();
         }
         if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
-            enterTunnel();
+            customCursor.targetDom.classList.add('show-transition');
+            customCursor.targetDom.classList.remove('show-enter');
+
+            if (clicked) {
+                if (customCursor.targetDom.classList.contains("show-project")) {
+                    customCursor.targetDom.classList.add('show-transition');
+                    customCursor.targetDom.classList.remove('show-project');
+                    prepareToShowProject();
+                }
+            } else {
+                // console.log("enterTunnel")
+                enterTunnel();
+            }
         }
     }
 
-    const customCursor = new CustomCursor();
+    customCursor = new CustomCursor();
     document.addEventListener("click", clickEventHandler);
+    
+    logo1 = document.getElementsByClassName("logo1")[0];
 
 
     $(".prev_btn").click(function(){
@@ -517,10 +617,17 @@ function init() {
         rotateMesh();
     })
 
-    function rotateMesh(){
+    function clearRotateMeshTimeout() {
         clearTimeout(looptimer);
         clearTimeout(looptimer2);
         clearTimeout(timer);
+    }
+
+    function rotateMesh(){
+        clearRotateMeshTimeout();
+        // clearTimeout(looptimer);
+        // clearTimeout(looptimer2);
+        // clearTimeout(timer);
         startanimate=false
         canchange=false;
         //tunnelArr[currenttunnelindex].mesh.rotation.x = (Math.PI / 180 * 90 ) ;
@@ -551,6 +658,12 @@ function init() {
         }
 
         if(clicked){
+            customCursor.targetDom.classList.remove("show-project");
+            customCursor.targetDom.classList.remove("show-left");
+            customCursor.targetDom.classList.remove("show-right");
+            customCursor.targetDom.classList.add("show-transition");
+
+            logo1.classList.remove("in-tunnel");
             gsap.to(tunnelgroup.position, {
                 duration: 3,
                 y: 0, 
@@ -558,11 +671,20 @@ function init() {
                 ease: Power1.easeInOut,
             });
             setTimeout(function(){
-                gsap.to(tunnelgroup.position, {
-                    duration: 3,
-                    x: -currenttunnelindex*spacing, 
-                    ease: Power1.easeInOut,
-                });
+                if (tunnelgroup.position.x === -currenttunnelindex * spacing) {
+                    customCursor.targetDom.classList.remove("show-transition");
+                    customCursor.cursorAnimate();
+                } else {
+                    gsap.to(tunnelgroup.position, {
+                        duration: 3,
+                        x: -currenttunnelindex * spacing, 
+                        ease: Power1.easeInOut,
+                        onComplete: function() {
+                            customCursor.targetDom.classList.remove("show-transition");
+                            customCursor.cursorAnimate();
+                        }
+                    });
+                }
             },3000)
             clicked=false;
         }else{
@@ -595,6 +717,7 @@ function init() {
             if(clicked){
                 
                 looptimer = setTimeout(function(){
+                    logo1.classList.add("in-tunnel");
                     gsap.to(tunnelArr[currenttunnelindex], {
                         duration: 4,
                         repeatX: 0.5, 
@@ -613,6 +736,15 @@ function init() {
 
                 looptimer2 = setTimeout(function(){
                     if(clicked){
+                        customCursor.projectPlate.innerHTML = projectTitles[currenttunnelindex];
+                        customCursor.targetDom.classList.remove("show-transition");
+                        if (
+                            !customCursor.targetDom.classList.contains("show-left")
+                            && !customCursor.targetDom.classList.contains("show-right")
+                        ) {
+                            customCursor.targetDom.classList.add("show-project");
+                        }
+
                         gsap.to(tunnelArr[currenttunnelindex], {
                             duration: 3,
                             repeatX: tunnelGlobal.repeatX, 
@@ -642,6 +774,9 @@ function init() {
                 clearTimeout(looptimer2);
             }
         }
+
+        doRotateMesh = rotateMesh;
+        doClearRotateMeshTimeout = clearRotateMeshTimeout;
 
         animate1();
 
@@ -774,6 +909,8 @@ function updateCameraPosition () {
   };
 
 function animate() {
+    if (isUpdateDisabled) return
+
     delta += clock.getDelta();
     updateCurve();
     updateTunnel();
