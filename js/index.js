@@ -671,15 +671,20 @@ function init() {
                 ease: Power1.easeInOut,
             });
             setTimeout(function(){
-                gsap.to(tunnelgroup.position, {
-                    duration: 3,
-                    x: -currenttunnelindex*spacing, 
-                    ease: Power1.easeInOut,
-                    onComplete: function() {
-                        customCursor.targetDom.classList.remove("show-transition");
-                        customCursor.cursorAnimate();
-                    }
-                });
+                if (tunnelgroup.position.x === -currenttunnelindex * spacing) {
+                    customCursor.targetDom.classList.remove("show-transition");
+                    customCursor.cursorAnimate();
+                } else {
+                    gsap.to(tunnelgroup.position, {
+                        duration: 3,
+                        x: -currenttunnelindex * spacing, 
+                        ease: Power1.easeInOut,
+                        onComplete: function() {
+                            customCursor.targetDom.classList.remove("show-transition");
+                            customCursor.cursorAnimate();
+                        }
+                    });
+                }
             },3000)
             clicked=false;
         }else{
