@@ -28,6 +28,90 @@ const projectTitles = [
     `<h1 class="text1">The Lost<br>Metropolis State Theatre<br>●<br>Shiu Ka Heng</h1>`,
 ]
 // console.log(projectTitles)
+
+const makeCurve1 = (points) => {
+    var numPoints = 20;
+    var radius = 0.08;
+    var height = 0.1;
+    var angleStep = Math.PI * 3 / 7;
+    for (i = 0; i < numPoints; i += 1) {
+        points.push(new THREE.Vector3(0, 0, 0));
+        if(i<6){
+            points[i].y = 0;
+            points[i].x = 0;
+            points[i].z = i / 8;
+            oldx = 0;
+            oldy = 0;
+            oldz = i / 8;
+        }else{
+            var angle = angleStep * i;
+            var myx = radius * Math.cos(angle) + Math.random() * 0.04 - 0.02;
+            var myy = radius * Math.sin(angle) + Math.random() * 0.04 - 0.02 + i * 0.02;
+            
+            points[i].y = myy;
+            points[i].x = myx;
+            points[i].z = (i != numPoints - 1) ? oldz + Math.random() * 0.2 : 2;
+            oldz = points[i].z;
+
+        }
+    }
+
+    return points
+}
+
+const makeCurve2 = (points) => {
+    var numPoints = 20;
+    var radius = 0.08;
+    var height = 0.1;
+    var angleStep = Math.PI * 3 / 7;
+    // console.log(Math.pow(-1, tunnelgroup.children.length % 2))
+    var mirrored = Math.pow(-1, tunnelgroup.children.length % 2);
+    for (i = 0; i < numPoints; i += 1) {
+        if(i<6){
+            points.push(new THREE.Vector3(0, 0, 0));
+            points[i].y = 0;
+            points[i].x = 0;
+            // points[i].z = i / 8;
+            points[i].z = i * 0.02;
+            oldx = 0;
+            oldy = 0;
+            oldz = i / 8;
+        }else{
+            // var angle = angleStep * i;
+            // var myx = radius * Math.min(1, (i - 6) / 4) * Math.cos(angle) + Math.random() * 0.04 - 0.02;
+            // var myy = radius * Math.min(1, (i - 6) / 4) * Math.sin(angle) + Math.random() * 0.04 - 0.02 + i * 0.02;
+            
+            // points[i].y = myy;
+            // points[i].x = myx;
+            // points[i].z = (i != numPoints - 1) ? oldz + Math.random() * 0.2 : 2;
+            // oldz = points[i].z;
+        }
+    }
+
+    points.push( new THREE.Vector3(mirrored * 0.03, -0.04, 0.2) );
+    points.push( new THREE.Vector3(mirrored * 0.06, -0.02, 0.25) );
+    //points.push( new THREE.Vector3(0.08, 0.04, 0.3) );
+    
+    points.push( new THREE.Vector3(mirrored * 0.10, 0.08, 0.35) );
+    points.push( new THREE.Vector3(mirrored * 0.14, 0.12, 0.4) );
+    points.push( new THREE.Vector3(mirrored * 0.13, 0.06, 0.425) );
+
+    points.push( new THREE.Vector3(mirrored * 0.09, 0.04, 0.45) );
+    points.push( new THREE.Vector3(mirrored * 0.04, 0.08, 0.5) );
+    points.push( new THREE.Vector3(mirrored * 0.03, 0.12, 0.55) );
+    points.push( new THREE.Vector3(mirrored * 0.05, 0.14, 0.6) );
+    // points.push( new THREE.Vector3(mirrored * 0.08, 0.16, 0.8) );
+
+    // points.push( new THREE.Vector3(mirrored * 0.07, 0.18, 1) );
+    // points.push( new THREE.Vector3(mirrored * 0.11, 0.19, 1.2) );
+    points.push( new THREE.Vector3(mirrored * 0.18, 0.3, 1.4) );
+    // points.push( new THREE.Vector3(mirrored * 0.20, 0.4, 1.8) );
+
+    points.push( new THREE.Vector3(mirrored * 0.25, 0.5, 2) );
+
+    return points
+}
+
 var addTunnelElement = function(url, x, hue){
     var points = [];
     var i = 0;
@@ -61,31 +145,8 @@ var addTunnelElement = function(url, x, hue){
     //     }
     // }
 
-    var numPoints = 20;
-    var radius = 0.08;
-    var height = 0.1;
-    var angleStep = Math.PI * 3 / 7;
-    for (i = 0; i < numPoints; i += 1) {
-        points.push(new THREE.Vector3(0, 0, 0));
-        if(i<6){
-            points[i].y = 0;
-            points[i].x = 0;
-            points[i].z = i / 8;
-            oldx = 0;
-            oldy = 0;
-            oldz = i / 8;
-        }else{
-            var angle = angleStep * i;
-            var myx = radius * Math.cos(angle) + Math.random() * 0.04 - 0.02;
-            var myy = radius * Math.sin(angle) + Math.random() * 0.04 - 0.02 + i * 0.02;
-            
-            points[i].y = myy;
-            points[i].x = myx;
-            points[i].z = (i != numPoints - 1) ? oldz + Math.random() * 0.2 : 2;
-            oldz = points[i].z;
-
-        }
-    }
+    // points = makeCurve1(points);
+    points = makeCurve2(points);
     
     // points[1].y = 0;
     // points[1].x = 0;
@@ -186,8 +247,8 @@ var addTunnelElement = function(url, x, hue){
 
     var tubeMesh = THREE.SceneUtils.createMultiMaterialObject( tubeGeometry, newmaterials );
 
-	tubeMesh.position.set( x, 0,0 );
-    tubeMesh.rotation.z = Math.random();
+	tubeMesh.position.set( x, 0, 0 );
+    // tubeMesh.rotation.z = Math.random();
 
     var tubeGeometry_o = tubeGeometry.clone();
 
@@ -558,6 +619,12 @@ const resumeUpdate = () => {
 
 const showProject = () => {
     console.log('SHOW PROJECT!!!!')
+    
+    const resumeUpdateOnce = () => {
+        document.removeEventListener("click", resumeUpdateOnce);
+        resumeUpdate();
+    }
+    document.addEventListener("click", resumeUpdateOnce);
 }
 const prepareToShowProjectComplete = () => {
     haltUpdate();
