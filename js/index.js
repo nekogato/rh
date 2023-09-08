@@ -613,7 +613,7 @@ function init() {
     customCursor = new CustomCursor();
     document.addEventListener("click", clickEventHandler);
     
-    logo1 = document.getElementsByClassName("header_logo")[0];
+    logo1 = document.getElementsByClassName("header")[0];
 
 
     $(".prev_btn").click(function(){

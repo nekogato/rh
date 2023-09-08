@@ -146,11 +146,11 @@ a{
 
 .home_body .header{
 	border-bottom:none;
-	height: 120px;
+	height: calc(9.0vw);
 }  
 
 .home_body .header .header_logo{
-	font-size: calc(12px + 3.0vw);
+	font-size: calc(12px + 5.0vw);
 }
 
 .home_body .header.in-tunnel .header_logo{  

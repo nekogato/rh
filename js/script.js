@@ -287,6 +287,8 @@ function statechange(){
 					customCursor.disable = false;
 					$(".custom-cursor").removeClass("disable")
 					$(".custom-cursor").removeClass("hide")
+					$(".custom-cursor").removeClass("show-transition")
+					
 				}else{
 					$("body").removeClass("home_body")
 					$("canvas").stop().animate({opacity:0}, 1200, 'swing', function() { });
@@ -400,6 +402,7 @@ function ajax_event(){
 				customCursor.disable = true;
 				$(".custom-cursor").addClass("disable")
 				$(".custom-cursor").addClass("hide")
+				$(".home_col_4").addClass("finish")
 			});
 		}
 	})
@@ -407,8 +410,6 @@ function ajax_event(){
 
 function init_function(){
 	statechange();
-	ajax_function()
-	ajax_event()
 	doscroll();
 }
 
@@ -423,6 +424,8 @@ $(function(){
 $(window).on("load", function () {
 	dosize();
 	doscroll();
+	ajax_function()
+	ajax_event()
 	$("body").addClass("loadfinish")
 });
 

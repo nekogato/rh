@@ -144,6 +144,7 @@ canvas{
     position: relative;
     display: flex;
     background-color: #000;
+    overflow: hidden;
 }
 
 .home_col .bg{
@@ -158,6 +159,10 @@ canvas{
     background-size: cover;
     align-items: center;
     opacity: 0.5;
+}
+
+.home_col_4.finish .bg{
+    transform: scale(1.5,1.5);
 }
 
 .home_col:hover .bg{
