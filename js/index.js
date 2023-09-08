@@ -17,6 +17,7 @@ var mouseGlobal = {
     ratio: new THREE.Vector2(0, 0),
     target: new THREE.Vector2(ww * 0.5, wh * 0.5)
 };
+var tunnelgroupZPositionRatio = 1;
 var doRotateMesh, doClearRotateMeshTimeout;
 var isUpdateDisabled = false;
 
@@ -72,7 +73,8 @@ const makeCurve2 = (points) => {
             points[i].y = 0;
             points[i].x = 0;
             // points[i].z = i / 8;
-            points[i].z = i * 0.02;
+            // points[i].z = i * 0.02;
+            points[i].z = i * 0.125;
             oldx = 0;
             oldy = 0;
             oldz = i / 8;
@@ -88,18 +90,21 @@ const makeCurve2 = (points) => {
         }
     }
 
-    points.push( new THREE.Vector3(mirrored * 0.03, -0.04, 0.2) );
-    points.push( new THREE.Vector3(mirrored * 0.06, -0.02, 0.25) );
+    headLength = 0.625
+    //headLength = 0
+
+    points.push( new THREE.Vector3(mirrored * 0.03, -0.04, 0.2 + headLength) );
+    points.push( new THREE.Vector3(mirrored * 0.06, -0.02, 0.25 + headLength) );
     //points.push( new THREE.Vector3(0.08, 0.04, 0.3) );
     
-    points.push( new THREE.Vector3(mirrored * 0.10, 0.08, 0.35) );
-    points.push( new THREE.Vector3(mirrored * 0.14, 0.12, 0.4) );
-    points.push( new THREE.Vector3(mirrored * 0.13, 0.06, 0.425) );
+    points.push( new THREE.Vector3(mirrored * 0.10, 0.08, 0.35 + headLength) );
+    points.push( new THREE.Vector3(mirrored * 0.14, 0.12, 0.4 + headLength) );
+    points.push( new THREE.Vector3(mirrored * 0.13, 0.06, 0.425 + headLength) );
 
-    points.push( new THREE.Vector3(mirrored * 0.09, 0.04, 0.45) );
-    points.push( new THREE.Vector3(mirrored * 0.04, 0.08, 0.5) );
-    points.push( new THREE.Vector3(mirrored * 0.03, 0.12, 0.55) );
-    points.push( new THREE.Vector3(mirrored * 0.05, 0.14, 0.6) );
+    points.push( new THREE.Vector3(mirrored * 0.09, 0.04, 0.45 + headLength) );
+    points.push( new THREE.Vector3(mirrored * 0.04, 0.08, 0.5 + headLength) );
+    points.push( new THREE.Vector3(mirrored * 0.03, 0.12, 0.55 + headLength) );
+    points.push( new THREE.Vector3(mirrored * 0.05, 0.14, 0.6 + headLength) );
     // points.push( new THREE.Vector3(mirrored * 0.08, 0.16, 0.8) );
 
     // points.push( new THREE.Vector3(mirrored * 0.07, 0.18, 1) );
@@ -110,6 +115,26 @@ const makeCurve2 = (points) => {
     points.push( new THREE.Vector3(mirrored * 0.25, 0.5, 2) );
 
     return points
+}
+
+const extendCurve2 = ( points ) => {
+
+    for (i = 0; i < 6; i++) {
+        points[i].z += ((i * 0.125) - points[i].z) * 0.01;
+    }
+    const lastZ = points[5].z
+    
+    points[6].z = 0.2 + lastZ;
+    points[7].z = 0.25 + lastZ;
+    points[8].z = 0.35 + lastZ;
+    points[9].z = 0.4 + lastZ;
+    points[10].z = 0.425 + lastZ;
+    points[11].z = 0.45 + lastZ;
+    points[12].z = 0.5 + lastZ;
+    points[13].z = 0.55 + lastZ;
+    points[14].z = 0.6 + lastZ;
+    points[15].z = 1.4;
+    points[16].z = 2;
 }
 
 var addTunnelElement = function(url, x, hue){
@@ -274,7 +299,10 @@ var addTunnelElement = function(url, x, hue){
 	
 }
 
-function updateCurve() {
+function updateCurve( noTransition ) {
+    tunnelgroupZPositionRatio = (2 - tunnelgroup.position.z) / 0.5;
+    const partial = noTransition ? 1 : 15;
+    
     for (let k = 0; k < tunnelArr.length; k++) {
         var i = 0;
         // var index = 0;
@@ -318,14 +346,26 @@ function updateCurve() {
         // vertice.x += ((vertice_o.x + tunnelArr[k].splineMesh.geometry.vertices[index].x) - vertice.x) / 15;
         // vertice.y += ((vertice_o.y + tunnelArr[k].splineMesh.geometry.vertices[index].y) - vertice.y) / 15;
         //vertice.applyAxisAngle(new THREE.Vector3(0,0,1), Math.abs(Math.cos(delta*0.001+vertice.z*5))*0.1);
-        
-        vertice.x += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3] - vertice.x) / 15;
-        vertice.y += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1] - vertice.y) / 15;
-        vertice.z += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2] - vertice.z) / 15;
 
-        normal.x += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3] - normal.x) / 15;
-        normal.y += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3+1] - normal.y) / 15;
-        normal.z += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3+2] - normal.z) / 15;
+        // if (k == 0 && vertice.z > 0.625 - 0.125/2 && vertice.z < 0.625 + 0.125/2) {
+        //     console.log(Math.min(5,Math.floor(i/31/7)), i, vertice.z);
+        // }
+        
+        let lastZ = 0;
+        // if (k !== currenttunnelindex || !clicked) {
+            // console.log(Math.floor(i/31/141))
+            // lastZ = Math.min(5, Math.floor(i/31/141)) * -0.105;
+            lastZ = Math.min(5 * 8,Math.floor(i/31)) * -0.105 / 8;
+        // }
+        lastZ *= tunnelgroupZPositionRatio
+        
+        vertice.x += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3] - vertice.x) / partial;
+        vertice.y += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+1] - vertice.y) / partial;
+        vertice.z += (tunnelArr[k].geometry_o.getAttribute("position").array[i*3+2] + lastZ - vertice.z) / partial;
+
+        normal.x += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3] - normal.x) / partial;
+        normal.y += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3+1] - normal.y) / partial;
+        normal.z += (tunnelArr[k].geometry_o.getAttribute("normal").array[i*3+2] + lastZ - normal.z) / partial;
 
         // normal.normalize()
 
@@ -869,10 +909,11 @@ function init() {
     tunnelgroup.add( new addTunnelElement( 'img/bg2.jpg',spacing, 100 ) );
     tunnelgroup.add( new addTunnelElement( 'img/bg3.jpg',spacing*2, 150 ) );
     tunnelgroup.add( new addTunnelElement( 'img/bg.jpg',spacing*3, 200 ) );
-    tunnelgroup.position.y=0;
-    tunnelgroup.position.z=1.5;
-    tunnelgroup.rotation.x=Math.PI / 180 * 180;
+    tunnelgroup.position.y = 0;
+    tunnelgroup.position.z = 1.5;
+    tunnelgroup.rotation.x = Math.PI / 180 * 180;
 	scene.add( tunnelgroup );
+    updateCurve(true);
 
     tunnelArr.forEach( (obj, index) => {
         // console.log(obj.splineMesh)
