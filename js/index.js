@@ -281,6 +281,7 @@ var addTunnelElement = function(url, x, hue){
         mesh : tubeMesh,
         geometry : tubeGeometry,
         geometry_o: tubeGeometry_o,
+        curve_o: curve.clone(),
         curve: curve,
         splineMesh: splineMesh,
         material: tubeMaterial,
@@ -355,7 +356,10 @@ function updateCurve( noTransition ) {
         // if (k !== currenttunnelindex || !clicked) {
             // console.log(Math.floor(i/31/141))
             // lastZ = Math.min(5, Math.floor(i/31/141)) * -0.105;
-            lastZ = Math.min(5 * 8,Math.floor(i/31)) * -0.105 / 8;
+            // lastZ = Math.min(5 * 8,Math.floor(i/31)) * -0.105 / 8;
+            // if (k == 1 ) console.log(Math.min(5 * 8, Math.floor(i/31)))
+            lastZ = (Math.pow(Math.min(5 * 8, Math.floor(i/31)), 2) / 40 * 0.3 + Math.min(5 * 8, Math.floor(i/31)) * 0.7) * -0.105 / 8;
+            // if (k === 1 ) console.log(Math.pow(Math.min(5 * 8,Math.floor(i/31)), 2) / 40);
         // }
         lastZ *= tunnelgroupZPositionRatio
         
@@ -380,7 +384,8 @@ function updateCurve( noTransition ) {
         // tunnelArr[k].geometry.computeVertexNormals()
         // tunnelArr[k].geometry.normalizeNormals();
         
-        var numPoints = 20;
+        // var numPoints = 20;
+        var numPoints = tunnelArr[k].curve.points.length;
         var radius = 0.02;
         var height = 0.1;
         var angleStep = Math.PI * 2 / 4;
@@ -398,17 +403,17 @@ function updateCurve( noTransition ) {
             }
         }
 
-
-        if( k == currenttunnelindex && startanimate ) {
-            tunnelArr[k].curve.points[4].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
-            tunnelArr[k].curve.points[5].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
-            tunnelArr[k].curve.points[6].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
-            tunnelArr[k].curve.points[7].x =  ((1 - mouseGlobal.ratio.x)  + Math.cos(delta)) * 0.04;
-        
-            tunnelArr[k].curve.points[4].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
-            tunnelArr[k].curve.points[5].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
-            tunnelArr[k].curve.points[6].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
-            tunnelArr[k].curve.points[7].y =  ((1 - mouseGlobal.ratio.y)  + Math.cos(delta)) * 0.04;
+        for (j = 4; j < tunnelArr[k].curve.points.length - 7; j++ ) {
+        // for (j = 4; j < 8; j++ ) {
+            if( k == currenttunnelindex && startanimate ) {
+            // if( k == currenttunnelindex) {
+                // console.log(tunnelArr[k].curve.points.length)
+                tunnelArr[k].curve.points[j].x =  tunnelArr[k].curve_o.points[j].x + ((1 - mouseGlobal.ratio.x) + Math.cos(delta)) * 0.04;
+                tunnelArr[k].curve.points[j].y =  tunnelArr[k].curve_o.points[j].y + ((1 - mouseGlobal.ratio.y) + Math.cos(delta)) * 0.04;
+            } else {
+                tunnelArr[k].curve.points[j].x =  tunnelArr[k].curve_o.points[j].x
+                tunnelArr[k].curve.points[j].y =  tunnelArr[k].curve_o.points[j].y
+            }
         }
 
         tunnelArr[k].curve = new THREE.CatmullRomCurve3(tunnelArr[k].curve.points);
@@ -977,6 +982,9 @@ function init() {
 }
 
 function onWindowResize() {
+
+    ww = window.innerWidth;
+    wh = window.innerHeight;
 
 	windowHalfX = window.innerWidth / 2;
     windowHalfY = window.innerHeight / 2;
