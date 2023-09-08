@@ -36,12 +36,13 @@
 
     </head>
 	<body>
+		<div id="blocker"></div>
 
         <!-- header -->
         <div class="header_bg"></div>
 
         <div class="header">
-            <div class="header_logo text4">Reimagines Heritage</div>
+            <a class="header_logo text4" href="index.html">Reimagines Heritage</a>
         </div>
 
         <a class="dropdown_btn ">
@@ -110,12 +111,31 @@
                 </div>
             </div>
 
+            <!-- footer -->
+            <div class="footer">
+                <div class="footer_logo"><div class="logo"></div></div>
+            </div>
         </div>
 
 
-        <!-- footer -->
-        <div class="footer">
-            <div class="footer_logo"><div class="logo"></div></div>
-        </div>
+		<div class="custom-cursor hide">
+			<div class="cursor-sizer">
+				<div class="center-wrapper">
+					<div class="cursor-left"></div>
+					<div class="cursor-enter"></div>
+					<div class="cursor-right"></div>
+					<div class="content_title_wrapper cursor-project-plate"></div>
+				</div>
+			</div>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/utils/SceneUtils.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/environments/RoomEnvironment.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r103/examples/js/controls/MapControls.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r147/examples/js/controls/OrbitControls.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r147/examples/js/controls/TrackballControls.js"></script>
+		<script src="js/vendors/perlin.js"></script>
+		<script src="js/index.js"></script>
 	</body>
 </html>
+
