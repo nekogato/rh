@@ -283,19 +283,23 @@ function statechange(){
 				if($(".home_content").length){
 					$("body").addClass("home_body")
 					$("canvas").stop().animate({opacity:1}, 1200, 'swing', function() { });
-					isUpdateDisabled=false;
-					customCursor.disable = false;
-					$(".custom-cursor").removeClass("disable")
-					$(".custom-cursor").removeClass("hide")
-					$(".custom-cursor").removeClass("show-transition")
+
+					resumeUpdate();
+					// isUpdateDisabled=false;
+					// customCursor.disable = false;
+					// $(".custom-cursor").removeClass("disable")
+					// $(".custom-cursor").removeClass("hide")
+					// $(".custom-cursor").removeClass("show-transition")
 					
 				}else{
 					$("body").removeClass("home_body")
 					$("canvas").stop().animate({opacity:0}, 1200, 'swing', function() { });
-					isUpdateDisabled=true;
-					customCursor.disable = true;
-					$(".custom-cursor").addClass("disable")
-					$(".custom-cursor").addClass("hide")
+
+					haltUpdate()
+					// isUpdateDisabled=true;
+					// customCursor.disable = true;
+					// $(".custom-cursor").addClass("disable")
+					// $(".custom-cursor").addClass("hide")
 				}
 				
 				

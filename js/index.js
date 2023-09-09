@@ -591,6 +591,7 @@ function CustomCursor() {
 
             if (!targetDom.classList.contains("show-transition")) {
                 if (clicked) {
+                    // in-tunnel
                     if (xRatio < 0.25) {
                         targetDom.classList.remove("show-project");
                         targetDom.classList.add("show-left");
@@ -607,16 +608,32 @@ function CustomCursor() {
                         }
                     }
                 } else {
+                    // outside tunnel
                     if (xRatio < 0.25) {
-                        targetDom.classList.remove("show-enter");
-                        targetDom.classList.add("show-left");
-                        targetDom.classList.remove("show-right");
-                    } else {
-                        if (xRatio > 0.75) {
+                        if (currenttunnelindex == 0) {
+                            targetDom.classList.add("show-end");
                             targetDom.classList.remove("show-enter");
                             targetDom.classList.remove("show-left");
-                            targetDom.classList.add("show-right");
+                            targetDom.classList.remove("show-right");
                         } else {
+                            targetDom.classList.remove("show-enter");
+                            targetDom.classList.add("show-left");
+                            targetDom.classList.remove("show-right");
+                        }
+                    } else {
+                        if (xRatio > 0.75) {
+                            if (currenttunnelindex == 3) {
+                                targetDom.classList.add("show-end");
+                                targetDom.classList.remove("show-enter");
+                                targetDom.classList.remove("show-left");
+                                targetDom.classList.remove("show-right");
+                            } else {
+                                targetDom.classList.remove("show-enter");
+                                targetDom.classList.remove("show-left");
+                                targetDom.classList.add("show-right");
+                            }
+                        } else {
+                            targetDom.classList.remove("show-end");
                             targetDom.classList.add("show-enter");
                             targetDom.classList.remove("show-left");
                             targetDom.classList.remove("show-right");
@@ -633,10 +650,10 @@ function CustomCursor() {
 
 
     document.addEventListener("mousemove", mousemove)
-    // document.addEventListener("mouseenter", mouseenter)
-    // document.addEventListener("mouseleave", mouseleave)
-    document.addEventListener("mouseover", mouseenter)
-    document.addEventListener("mouseout", mouseleave)
+    document.getElementsByTagName("html")[0].addEventListener("mouseenter", mouseenter)
+    document.getElementsByTagName("html")[0].addEventListener("mouseleave", mouseleave)
+    // document.addEventListener("mouseover", mouseenter)
+    // document.addEventListener("mouseout", mouseleave)
 
     // cursorAnimate()
     
@@ -675,6 +692,7 @@ const prepareToShowProjectComplete = () => {
 }
 const prepareToShowProject = () => {
     gsap.to( renderer.domElement, { duration: 2, opacity: 0, onComplete: prepareToShowProjectComplete });
+    document.getElementsByClassName("home_content")[0].style.opacity = 0;
 
 }
 
@@ -686,31 +704,40 @@ function init() {
             customCursor.targetDom.classList.add("clicked");
             setTimeout( () => {customCursor.targetDom.classList.remove("clicked");}, 250);
             
-            if (customCursor.xRatio < 0.25) {
-                if(currenttunnelindex>1){
-                    currenttunnelindex--;
-                    rotateMesh();
-                }
-            }
-            if (customCursor.xRatio > 0.75) {
-                if(currenttunnelindex<tunnelArr.length-1){
-                    currenttunnelindex++;
-                    rotateMesh();
-                }
-            }
-            if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
-                customCursor.targetDom.classList.add('show-transition');
-                customCursor.targetDom.classList.remove('show-enter');
-
-                if (clicked) {
-                    if (customCursor.targetDom.classList.contains("show-project")) {
-                        customCursor.targetDom.classList.add('show-transition');
-                        customCursor.targetDom.classList.remove('show-project');
-                        prepareToShowProject();
+            if (!customCursor.targetDom.classList.contains("show-transition")) {
+                if ( clicked ) {
+                    // in tunnel
+                    if (customCursor.xRatio < 0.25 || customCursor.xRatio > 0.75) {
+                            rotateMesh();
                     }
-                } else {
-                    // console.log("enterTunnel")
-                    enterTunnel();
+                    if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
+                        if (customCursor.targetDom.classList.contains("show-project")) {
+                            customCursor.targetDom.classList.add('show-transition');
+                            customCursor.targetDom.classList.remove('show-project');
+                            prepareToShowProject();
+                        }
+                    }
+                }  else {
+                    if (customCursor.xRatio < 0.25) {
+                        if(currenttunnelindex >= 1){
+                            currenttunnelindex--;
+                            rotateMesh();
+                        }
+                    }
+                    if (customCursor.xRatio > 0.75) {
+                        if(currenttunnelindex < tunnelArr.length-1){
+                            currenttunnelindex++;
+                            rotateMesh();
+                        }
+                    }
+                    if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
+                        customCursor.targetDom.classList.add('show-transition');
+                        customCursor.targetDom.classList.remove('show-enter');
+                        
+                        // outside tunnel
+                        // console.log("enterTunnel")
+                        enterTunnel();
+                    }
                 }
             }
         } 
@@ -743,14 +770,14 @@ function init() {
         // clearTimeout(looptimer);
         // clearTimeout(looptimer2);
         // clearTimeout(timer);
-        startanimate=false
-        canchange=false;
+        startanimate = false
+        canchange = false;
         //tunnelArr[currenttunnelindex].mesh.rotation.x = (Math.PI / 180 * 90 ) ;
         //tunnelArr[currenttunnelindex].mesh.position.y = 1 ;
         //tunnelArr[currenttunnelindex].mesh.position.z = 0.5 ;
         timer = setTimeout(function(){
-            canchange=true
-        },0)
+            canchange = true
+        }, 0)
 
        
 
@@ -772,7 +799,7 @@ function init() {
             });
         }
 
-        if(clicked){
+        if ( clicked ) {
             customCursor.targetDom.classList.remove("show-project");
             customCursor.targetDom.classList.remove("show-left");
             customCursor.targetDom.classList.remove("show-right");
@@ -800,15 +827,20 @@ function init() {
                         }
                     });
                 }
-            },3000)
-            clicked=false;
-        }else{
+            }, 3000)
+            clicked = false;
+        } else {
+            customCursor.targetDom.classList.add("show-transition");
             gsap.to(tunnelgroup.position, {
                 duration: 3,
                 x: -currenttunnelindex*spacing, 
                 ease: Power1.easeInOut,
+                onComplete: function() {
+                    customCursor.targetDom.classList.remove("show-transition");
+                    customCursor.cursorAnimate();
+                }
             });
-            clicked=false;
+            clicked = false;
         }
 
         
@@ -853,6 +885,7 @@ function init() {
                     if(clicked){
                         customCursor.projectPlate.innerHTML = projectTitles[currenttunnelindex];
                         customCursor.targetDom.classList.remove("show-transition");
+                        customCursor.cursorAnimate()
                         if (
                             !customCursor.targetDom.classList.contains("show-left")
                             && !customCursor.targetDom.classList.contains("show-right")
