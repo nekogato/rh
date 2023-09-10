@@ -557,7 +557,7 @@ function CustomCursor() {
         cursorAnimate()
     }
     const cursorAnimate = ( observeTransition ) => {
-        if (!customCursor.disable){
+        // if (!customCursor.disable){
 
             // console.log("cursorAnimate", targetDom.style.transform)
             // console.log(destX/window.innerWidth*100, destY/window.innerHeight*100)
@@ -582,31 +582,50 @@ function CustomCursor() {
             // console.log(curX, curY)
 
             xRatio = destX/window.innerWidth
+            yRatio = destY/window.innerHeight
             this.xRatio = xRatio;
+            this.yRatio = yRatio;
             // targetDom.style.transform = "translate(" + (curX/window.innerWidth * 100 * (window.innerWidth/100) - 50) + "%, " + (curY/window.innerHeight * 100 * (window.innerHeight/100) - 50) + "%)";
             targetDom.style.transform = "translate(" + destX + "px, " + destY + "px)";
             // targetDom.style.opacity = 1;
-            targetDom.classList.remove("hide");
+
+            // if (clicked && targetDom.classList.contains("show-project")) {
+            //     console.log(xRatio - 0.5);
+            //     targetDom.style.transform = "translate(" 
+            //     + (destX - (0.5 - xRatio) * (0.5  * window.innerWidth)) + "px, "
+            //     + (destY - (0.5 - yRatio) + (1 - (0.5 - yRatio) / 3) * (0.5  * window.innerHeight)) + "px)";
+            // }
+
+        if (!customCursor.disable){
+
+            // targetDom.classList.remove("hide");
             //console.log("translate(" + destX/window.innerHeight*100 + "%, " + destY/window.innerHeight*100 + "%)");
 
             if (!targetDom.classList.contains("show-transition")) {
                 if (clicked) {
                     // in-tunnel
-                    if (xRatio < 0.25) {
-                        targetDom.classList.remove("show-project");
-                        targetDom.classList.add("show-left");
-                        targetDom.classList.remove("show-right");
+                    if (Math.sqrt((0.5 -xRatio) * (0.5 - xRatio) + (0.5 - yRatio) * (0.5 - yRatio)) < 0.25) {
+                        targetDom.classList.add("show-project");
+                        targetDom.classList.remove("show-exit");
                     } else {
-                        if (xRatio > 0.75) {
-                            targetDom.classList.remove("show-project");
-                            targetDom.classList.remove("show-left");
-                            targetDom.classList.add("show-right"); 
-                        } else {
-                            targetDom.classList.add("show-project");
-                            targetDom.classList.remove("show-left");
-                            targetDom.classList.remove("show-right");
-                        }
+                        targetDom.classList.remove("show-project");
+                        targetDom.classList.add("show-exit");
                     }
+                    // if (xRatio < 0.25) {
+                    //     targetDom.classList.remove("show-project");
+                    //     targetDom.classList.add("show-left");
+                    //     targetDom.classList.remove("show-right");
+                    // } else {
+                    //     if (xRatio > 0.75) {
+                    //         targetDom.classList.remove("show-project");
+                    //         targetDom.classList.remove("show-left");
+                    //         targetDom.classList.add("show-right"); 
+                    //     } else {
+                    //         targetDom.classList.add("show-project");
+                    //         targetDom.classList.remove("show-left");
+                    //         targetDom.classList.remove("show-right");
+                    //     }
+                    // }
                 } else {
                     // outside tunnel
                     if (xRatio < 0.25) {
@@ -701,23 +720,26 @@ function init() {
         
         if (!customCursor.disable){
 
-            customCursor.targetDom.classList.add("clicked");
-            setTimeout( () => {customCursor.targetDom.classList.remove("clicked");}, 250);
+            // customCursor.targetDom.classList.add("clicked");
+            // setTimeout( () => {customCursor.targetDom.classList.remove("clicked");}, 250);
             
             if (!customCursor.targetDom.classList.contains("show-transition")) {
                 if ( clicked ) {
                     // in tunnel
-                    if (customCursor.xRatio < 0.25 || customCursor.xRatio > 0.75) {
+                    // if (customCursor.xRatio < 0.25 || customCursor.xRatio > 0.75) {
+                        if (customCursor.targetDom.classList.contains("show-exit")) {
                             rotateMesh();
-                    }
-                    if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
+                        }
+                    // }
+                    // if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
                         if (customCursor.targetDom.classList.contains("show-project")) {
                             customCursor.targetDom.classList.add('show-transition');
                             customCursor.targetDom.classList.remove('show-project');
                             prepareToShowProject();
                         }
-                    }
+                    // }
                 }  else {
+                    // outside tunnel
                     if (customCursor.xRatio < 0.25) {
                         if(currenttunnelindex >= 1){
                             currenttunnelindex--;
@@ -733,8 +755,6 @@ function init() {
                     if (customCursor.xRatio >= 0.25 && customCursor.xRatio <= 0.75 ) {
                         customCursor.targetDom.classList.add('show-transition');
                         customCursor.targetDom.classList.remove('show-enter');
-                        
-                        // outside tunnel
                         // console.log("enterTunnel")
                         enterTunnel();
                     }
@@ -803,6 +823,7 @@ function init() {
             customCursor.targetDom.classList.remove("show-project");
             customCursor.targetDom.classList.remove("show-left");
             customCursor.targetDom.classList.remove("show-right");
+            customCursor.targetDom.classList.remove("show-exit");
             customCursor.targetDom.classList.add("show-transition");
 
             logo1.classList.remove("in-tunnel");
@@ -884,13 +905,17 @@ function init() {
                 looptimer2 = setTimeout(function(){
                     if(clicked){
                         customCursor.projectPlate.innerHTML = projectTitles[currenttunnelindex];
-                        customCursor.targetDom.classList.remove("show-transition");
-                        customCursor.cursorAnimate()
-                        if (
-                            !customCursor.targetDom.classList.contains("show-left")
-                            && !customCursor.targetDom.classList.contains("show-right")
-                        ) {
-                            customCursor.targetDom.classList.add("show-project");
+                        if (customCursor.targetDom.classList.contains("show-transition")) {
+                            // first time after getting in tunnel
+                            customCursor.targetDom.classList.remove("show-transition");
+                            customCursor.cursorAnimate()
+                            if (
+                                !customCursor.targetDom.classList.contains("show-exit")
+                                // !customCursor.targetDom.classList.contains("show-left")
+                                // && !customCursor.targetDom.classList.contains("show-right")
+                            ) {
+                                customCursor.targetDom.classList.add("show-project");
+                            }
                         }
 
                         gsap.to(tunnelArr[currenttunnelindex], {

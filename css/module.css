@@ -315,7 +315,7 @@ canvas{
     transition: transform 200ms;
 }
 
-.center-wrapper .cursor-left, .center-wrapper .cursor-right, .center-wrapper .cursor-enter {
+.center-wrapper .cursor-left, .center-wrapper .cursor-right, .center-wrapper .cursor-enter, .center-wrapper .cursor-exit {
     display: block;
     position: absolute;
     content: " ";
@@ -337,10 +337,14 @@ canvas{
 .cursor-enter {
     background-image: url("../img/cursor-enter.png");
 }
+.cursor-exit {
+    background-image: url("../img/cursor-exit.png");
+}
 
 :not(.show-left) > div > div > .cursor-left,
 :not(.show-right) > div > div > .cursor-right,
-:not(.show-enter) > div > div > .cursor-enter {
+:not(.show-enter) > div > div > .cursor-enter,
+:not(.show-exit) > div > div > .cursor-exit {
     transition: transform 100ms ease-out, opacity 100ms ease-out;
     transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
@@ -373,8 +377,9 @@ canvas{
     box-sizing: border-box;
 }
 .show-left > div > .center-wrapper,
+.show-right > div > .center-wrapper, 
 .show-enter > div > .center-wrapper,
-.show-right > div > .center-wrapper {
+.show-exit > div > .center-wrapper {
     width: 88px;
     height: 88px;
 }

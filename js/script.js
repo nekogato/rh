@@ -378,13 +378,13 @@ function ajax_event(){
 		return false;
 	})
 
-	$(".view_icon_wrapper ul").mouseenter(function(){
+	$(".view_icon_wrapper li").mouseenter(function(){
 		customCursor.disable = true;
 		$(".custom-cursor").addClass("disable")
 		$(".custom-cursor").addClass("hide")
 	})
 
-	$(".view_icon_wrapper ul").mouseleave(function(){
+	$(".view_icon_wrapper li").mouseleave(function(){
 		if($(".home_content").length && !$("body").hasClass("openmenu") && $(".view_icon_wrapper li[data-view='tunnel']").hasClass("active")){
 			customCursor.disable = false;
 			$(".custom-cursor").removeClass("disable")
