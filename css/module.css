@@ -172,6 +172,27 @@ canvas{
 
 .home_col:hover .bg{
     opacity: 0.3;
+    animation: roller 10s linear infinite;
+}
+
+@keyframes roller {
+    0% {
+        background-size: 1000% 20%;
+        background-position-x: 0%;
+    }
+    20%, 80% {
+        background-size: 600% 40%;
+    }
+    35%, 85% {
+        background-size: 800% 30%;
+    }
+    60%, 90% {
+        background-size: 1000% 20%;
+    }
+    100% {
+        background-size: 1000% 20%;
+        background-position-x: 200%;
+    }
 }
 
 .home_col a{

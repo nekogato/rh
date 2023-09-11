@@ -695,8 +695,20 @@ function CustomCursor() {
     
 }
 
+const switchTunnelView = () => {
+    // console.log("switchTunnelView")
+    gsap.to( renderer.domElement, { duration: 1, opacity: 1});
+    resumeUpdate()
+}
+
+const switchListView = () => {
+    // console.log("switchListView")
+    gsap.to( renderer.domElement, { duration: 0, opacity: 0, onComplete: haltUpdate });
+    // haltUpdate()
+}
+
 const haltUpdate = () => {
-    doClearRotateMeshTimeout()
+    if (clicked) doClearRotateMeshTimeout()
     
     customCursor.targetDom.classList.add("disable");
     customCursor.disable = true;
@@ -706,6 +718,7 @@ const haltUpdate = () => {
 }
 
 const resumeUpdate = () => {
+    // console.log("resumeUpdate")
     customCursor.targetDom.classList.add('show-transition');
 
     customCursor.targetDom.classList.remove("disable");
@@ -714,9 +727,13 @@ const resumeUpdate = () => {
     isUpdateDisabled = false;
     document.getElementsByTagName("html")[0].style.cursor = "none";
 
-    animate();
-
-    gsap.to( renderer.domElement, { duration: 1, opacity: 1, onComplete: doRotateMesh} );
+    // animate();
+    if (clicked) {
+        gsap.to( renderer.domElement, { duration: 1, opacity: 1, onComplete: doRotateMesh} );
+    } else {
+        customCursor.targetDom.classList.remove("show-transition");
+        customCursor.cursorAnimate();
+    }
 }
 
 const showProject = () => {
@@ -965,9 +982,6 @@ function init() {
             }
         }
 
-        doRotateMesh = rotateMesh;
-        doClearRotateMeshTimeout = clearRotateMeshTimeout;
-
         animate1();
 
         
@@ -977,6 +991,9 @@ function init() {
 
 
     }
+    
+    doRotateMesh = rotateMesh;
+    doClearRotateMeshTimeout = clearRotateMeshTimeout;
 
     $(".enter_btn").click(enterTunnel);
 
