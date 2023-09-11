@@ -506,6 +506,9 @@ function CustomCursor() {
     let destY
     let storedTransition
     let xRatio
+    let yRatio
+    let xPull
+    let yPull
     const _size = 512;
     // let targetDom = document.createElement("div");
     // targetDom.classList.add("custom-cursor");
@@ -589,12 +592,26 @@ function CustomCursor() {
             targetDom.style.transform = "translate(" + destX + "px, " + destY + "px)";
             // targetDom.style.opacity = 1;
 
-            // if (clicked && targetDom.classList.contains("show-project")) {
-            //     console.log(xRatio - 0.5);
-            //     targetDom.style.transform = "translate(" 
-            //     + (destX - (0.5 - xRatio) * (0.5  * window.innerWidth)) + "px, "
-            //     + (destY - (0.5 - yRatio) + (1 - (0.5 - yRatio) / 3) * (0.5  * window.innerHeight)) + "px)";
-            // }
+            if (clicked && targetDom.classList.contains("show-project")) {
+                // console.log(projectPlate)
+                projectPlate.style.left = ((0.5 - xRatio) * 100 + 50) + "%";
+                projectPlate.style.top = ((0.5 - yRatio) * 100 + 50) + "%";
+            }
+
+            if (clicked && targetDom.classList.contains("show-project")) {
+                // console.log(xRatio - 0.5);
+                xPull = 0.5 - xRatio
+                yPull = 0.5 - yRatio
+                if ( xRatio > 0.5) {
+                    xPull = xRatio - 0.5
+                }
+                if ( yRatio > 0.5) {
+                    yPull = yRatio - 0.5
+                }
+                targetDom.style.transform = "translate(" 
+                + (destX * xPull/ 0.25 * 0.5 + (1 - xPull/ 0.25 * 0.5) * (0.5  * window.innerWidth)) + "px, "
+                + (destY * yPull/ 0.25 * 0.5 + (1 - yPull/ 0.25 * 0.5) * (0.5  * window.innerHeight)) + "px)";
+            }
 
         if (!customCursor.disable){
 

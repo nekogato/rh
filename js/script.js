@@ -220,13 +220,13 @@ function check_pushstate_click(){
 
 function init_event(){
 
-	$(".dropdown_btn").mouseenter(function(){
+	$(".dropdown_btn, .header_logo").mouseenter(function(){
 		customCursor.disable = true;
 		$(".custom-cursor").addClass("disable")
 		$(".custom-cursor").addClass("hide")
 	})
 
-	$(".dropdown_btn").mouseleave(function(){
+	$(".dropdown_btn, .header_logo").mouseleave(function(){
 		if($(".home_content").length && !$("body").hasClass("openmenu")){
 			customCursor.disable = false;
 			$(".custom-cursor").removeClass("disable")
@@ -342,7 +342,8 @@ function ajax_function(){
 	if($(".home_content").length){
 		customCursor.disable = false;
 		$(".custom-cursor").removeClass("disable")
-		$(".custom-cursor").removeClass("hide")
+		/* commented to prevent custom-cursor appears at initial load */
+		// $(".custom-cursor").removeClass("hide")
 	}else{
 		customCursor.disable = true;
 		$(".custom-cursor").addClass("disable")
