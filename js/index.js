@@ -515,13 +515,19 @@ function CustomCursor() {
     // targetDom.innerHTML = "ENTER";
     // document.body.append(targetDom);
     let targetDom = document.getElementsByClassName("custom-cursor")[0];
+    let mobileDom = document.getElementsByClassName("mobile-center-wrapper")[0];
     targetDom.style.transform = "translate(" + (window.innerWidth/2) + "px, " + (window.innerHeight/2) + "px)";
     this.targetDom = targetDom;
+    this.mobileDom = mobileDom;
 
     let projectPlate = targetDom.getElementsByClassName("cursor-project-plate")[0];
+    let mobileProjectPlate = mobileDom.getElementsByClassName("mobile-project-plate")[0];
     this.projectPlate = projectPlate;
+    this.mobileProjectPlate = mobileProjectPlate;
 
     const mouseenter = (e) => {
+        if (customCursor.targetDom.classList.contains("mobile")) return
+
         // console.log("mouseenter");
         // console.log(e);
         if (document.hasFocus()) {
@@ -533,6 +539,8 @@ function CustomCursor() {
     }
 
     const mouseleave = (e) => {
+        if (customCursor.targetDom.classList.contains("mobile")) return
+
         // console.log("mouseleave")
         // targetDom.style.opacity = 0;
         targetDom.classList.add("hide");
@@ -541,6 +549,9 @@ function CustomCursor() {
     }
 
     const mousemove = (e) => {
+        
+        if (customCursor.targetDom.classList.contains("mobile")) return
+
         // console.log("mousemove", e.clientX, e.clientY)
         if (e.clientX) {
             destX = e.clientX
@@ -560,6 +571,9 @@ function CustomCursor() {
         cursorAnimate()
     }
     const cursorAnimate = ( observeTransition ) => {
+        
+        if (customCursor.targetDom.classList.contains("mobile")) return
+
         // if (!customCursor.disable){
 
             // console.log("cursorAnimate", targetDom.style.transform)
@@ -712,6 +726,7 @@ const haltUpdate = () => {
     
     customCursor.targetDom.classList.add("disable");
     customCursor.disable = true;
+    customCursor.passthrough = true;
 
     isUpdateDisabled = true;
     document.getElementsByTagName("html")[0].style.cursor = "";
@@ -723,6 +738,7 @@ const resumeUpdate = () => {
 
     customCursor.targetDom.classList.remove("disable");
     customCursor.disable = false;
+    customCursor.passthrough = false;
 
     isUpdateDisabled = false;
     document.getElementsByTagName("html")[0].style.cursor = "none";
@@ -749,10 +765,146 @@ const prepareToShowProject = () => {
 
 }
 
+let initX, initY;
+let finX, finY;
+let diffX, diffY;
+
+const touchmoveEvent = (e) => {
+    if (!customCursor.passthrough) {
+        e.preventDefault();
+    } else {
+        return
+    }
+
+    finX = e.touches[0].clientX
+    finY = e.touches[0].clientY
+
+    diffX = (finX - initX) / window.innerWidth
+    diffY = (finY - initY) / window.innerHeight
+    const weighed = (diffX < 0 && currenttunnelindex === tunnelArr.length - 1) || (diffX > 0 && currenttunnelindex === 0) ? 0.005 : 0.025;
+
+    if (clicked) {
+        // in tunnel
+        if (customCursor.targetDom.classList.contains("show-project")) {
+            customCursor.mobileDom.style.transform = "translate(-50%, -50%) scale(" + (0.75 + Math.max(-0.08, diffY) * 2) +")";
+        }
+    } else {
+        // outside tunnel
+        tunnelgroup.position.x = -currenttunnelindex * spacing + diffX * weighed
+        tunnelgroup.position.z = 1.5 + diffY * 0.2
+    }
+    
+
+    // gsap.to(tunnelgroup.position, {
+    //     duration: 3,
+    //     x: -currenttunnelindex * spacing, 
+    //     ease: Power1.easeInOut,
+    //     onComplete: function() {
+    //         customCursor.targetDom.classList.remove("show-transition");
+    //         customCursor.cursorAnimate();
+    //     }
+    // });
+}
+
+const touchendEvent = (e) => {
+    document.removeEventListener("touchmove", touchmoveEvent);
+    document.removeEventListener("touchend", touchendEvent);
+    if (clicked) {
+        // in tunnel
+        if (customCursor.targetDom.classList.contains("show-project")) {
+            if (diffY > 0.2) {
+                customCursor.targetDom.classList.add('show-transition');
+                customCursor.targetDom.classList.remove('show-project');
+                customCursor.mobileDom.classList.remove('show-project');
+                prepareToShowProject();
+            } else {
+                if (diffY < -0.2) {
+                    customCursor.targetDom.classList.add('show-transition');
+                    customCursor.targetDom.classList.remove('show-project');
+                    customCursor.mobileDom.classList.remove('show-project');
+                    doRotateMesh();
+                }
+            }
+            
+            // customCursor.mobileDom.style.transform = "";
+            gsap.to(customCursor.mobileDom, 0.5, {scale: 0.75});
+            
+        }
+    } else {
+        // outside tunnel
+        if (diffY > 0.2) {
+            customCursor.targetDom.classList.add('show-transition');
+            doEnterTunnel();
+        } else {
+            if (diffX > 0.2) {
+                if(currenttunnelindex >= 1){
+                    currenttunnelindex--;
+                    doRotateMesh();
+                } else {
+                    // tunnelgroup.position.x = -currenttunnelindex * spacing
+                    gsap.to(tunnelgroup.position, 0.5, {x : -currenttunnelindex * spacing, z: 1.5, ease: Power1.easeOut});
+                }
+            } else {
+                if (diffX < -0.2) {
+                    if(currenttunnelindex < tunnelArr.length-1){
+                        currenttunnelindex++;
+                        doRotateMesh();
+                    } else {
+                        // tunnelgroup.position.x = -currenttunnelindex * spacing
+                        gsap.to(tunnelgroup.position, 0.5, {x : -currenttunnelindex * spacing, z: 1.5, ease: Power1.easeOut});
+                    }
+                } else {
+                    // tunnelgroup.position.x = -currenttunnelindex * spacing
+                    gsap.to(tunnelgroup.position, 0.5, {x : -currenttunnelindex * spacing, z: 1.5, ease: Power1.easeOut});
+                }
+            }
+        }
+    }
+    
+}
+const touchstartEvent = (e) => {
+    if (!customCursor.passthrough) e.preventDefault();
+
+    // alert(!customCursor.targetDom.classList.contains("show-transition"))
+    if (!customCursor.targetDom.classList.contains("show-transition")) {
+
+        initX = e.touches[0].clientX
+        initY = e.touches[0].clientY
+        
+        document.addEventListener("touchmove", touchmoveEvent, {passive: false});
+        document.addEventListener("touchend", touchendEvent);
+    }
+}
+const initTouchEvents = ( e ) => {
+    e.preventDefault();
+
+    console.log("initTouchEvent");
+    document.removeEventListener("touchstart", initTouchEvents)
+    // prevent scroll/pinch gestures on window?
+    // alert(document.getElementsByTagName("canvas")[0])
+    // document.addEventListener('touchmove', preventScroll, {passive: false});
+    
+    document.addEventListener("touchstart", touchstartEvent, {passive: false});
+    // document.addEventListener("touchend", touchendEvent);
+
+    touchstartEvent(e);
+
+    customCursor.targetDom.classList.add("mobile");
+    customCursor.mobileDom.classList.remove("hide");
+}
+
 function init() {
     const clickEventHandler = (e) => {
-        
-        if (!customCursor.disable){
+        if (e.pointerType !== "mouse") {
+            if (!customCursor.targetDom.classList.contains("mobile")) {
+                console.log("hell")
+                customCursor.targetDom.classList.add("mobile");
+                customCursor.mobileDom.classList.remove("hide");
+                // initTouchEvents()
+                // alert(e.pointerType);
+            }
+        }
+        if (!customCursor.disable && e.pointerType === "mouse" ){
 
             // customCursor.targetDom.classList.add("clicked");
             // setTimeout( () => {customCursor.targetDom.classList.remove("clicked");}, 250);
@@ -799,6 +951,7 @@ function init() {
 
     customCursor = new CustomCursor();
     document.addEventListener("click", clickEventHandler);
+    document.addEventListener("touchstart", initTouchEvents, {passive: false});
     
     logo1 = document.getElementsByClassName("header")[0];
 
@@ -854,6 +1007,7 @@ function init() {
         }
 
         if ( clicked ) {
+            customCursor.mobileDom.classList.remove("show-project");
             customCursor.targetDom.classList.remove("show-project");
             customCursor.targetDom.classList.remove("show-left");
             customCursor.targetDom.classList.remove("show-right");
@@ -939,6 +1093,7 @@ function init() {
                 looptimer2 = setTimeout(function(){
                     if(clicked){
                         customCursor.projectPlate.innerHTML = projectTitles[currenttunnelindex];
+                        customCursor.mobileProjectPlate.innerHTML = projectTitles[currenttunnelindex];
                         if (customCursor.targetDom.classList.contains("show-transition")) {
                             // first time after getting in tunnel
                             customCursor.targetDom.classList.remove("show-transition");
@@ -949,6 +1104,7 @@ function init() {
                                 // && !customCursor.targetDom.classList.contains("show-right")
                             ) {
                                 customCursor.targetDom.classList.add("show-project");
+                                customCursor.mobileDom.classList.add("show-project");
                             }
                         }
 
@@ -994,6 +1150,7 @@ function init() {
     
     doRotateMesh = rotateMesh;
     doClearRotateMeshTimeout = clearRotateMeshTimeout;
+    doEnterTunnel = enterTunnel;
 
     $(".enter_btn").click(enterTunnel);
 
@@ -1091,6 +1248,7 @@ function onWindowResize() {
 }
 
 function onDocumentMouseMove( event ) {
+    if (customCursor.targetDom.classList.contains("mobile")) return
 
     mouseGlobal.target.x = event.clientX;
     mouseGlobal.target.y = event.clientY;
