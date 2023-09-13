@@ -169,16 +169,18 @@ canvas{
     background-size: cover;
     align-items: center;
     opacity: 0.5;
+    transform: scale(1,1);
 }
 
 .home_col_4.finish .bg{
-    transform: scale(1.5,1.5);
+    transform: scale(1.1,1.1);
 }
 
 .home_col:hover .bg{
     opacity: 0.3;
-    background-size: auto;
-    animation: roller 10s linear infinite;
+    transform: scale(2.5,1.1);
+    /* background-size: auto; */
+    /* animation: roller 10s linear infinite; */
 }
 
 @keyframes roller {
