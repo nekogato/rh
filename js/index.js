@@ -1162,10 +1162,10 @@ function init() {
 
     
 	tunnelgroup = new THREE.Group();
-    tunnelgroup.add( new addTunnelElement( 'img/bg1.jpg',0, 50 ) );
-    tunnelgroup.add( new addTunnelElement( 'img/bg2.jpg',spacing, 100 ) );
-    tunnelgroup.add( new addTunnelElement( 'img/bg3.jpg',spacing*2, 150 ) );
-    tunnelgroup.add( new addTunnelElement( 'img/bg.jpg',spacing*3, 200 ) );
+    tunnelgroup.add( new addTunnelElement( 'img/bg2.jpg',0, 50 ) );
+    tunnelgroup.add( new addTunnelElement( 'img/bg1.jpg',spacing, 100 ) );
+    // tunnelgroup.add( new addTunnelElement( 'img/bg3.jpg',spacing*2, 150 ) );
+    // tunnelgroup.add( new addTunnelElement( 'img/bg.jpg',spacing*3, 200 ) );
     tunnelgroup.position.y = 0;
     tunnelgroup.position.z = 1.5;
     tunnelgroup.rotation.x = Math.PI / 180 * 180;
