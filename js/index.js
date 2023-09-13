@@ -674,7 +674,7 @@ function CustomCursor() {
                         }
                     } else {
                         if (xRatio > 0.75) {
-                            if (currenttunnelindex == 3) {
+                            if (currenttunnelindex == tunnelArr.length - 1) {
                                 targetDom.classList.add("show-end");
                                 targetDom.classList.remove("show-enter");
                                 targetDom.classList.remove("show-left");
@@ -714,7 +714,7 @@ function CustomCursor() {
 const switchTunnelView = () => {
     // console.log("switchTunnelView")
     gsap.to( renderer.domElement, { duration: 1, opacity: 1});
-    resumeUpdate()
+    resumeUpdate(false)
 }
 
 const switchListView = () => {
@@ -729,12 +729,16 @@ const haltUpdate = () => {
     customCursor.targetDom.classList.add("disable");
     customCursor.disable = true;
     customCursor.passthrough = true;
+    
+    if (customCursor.targetDom.classList.contains("mobile")) {
+	    customCursor.mobileDom.classList.add("hide")
+    }
 
     isUpdateDisabled = true;
     document.getElementsByTagName("html")[0].style.cursor = "";
 }
 
-const resumeUpdate = () => {
+const resumeUpdate = ( isGoingBack ) => {
     // console.log("resumeUpdate")
     customCursor.targetDom.classList.add('show-transition');
 
@@ -742,11 +746,15 @@ const resumeUpdate = () => {
     customCursor.disable = false;
     customCursor.passthrough = false;
 
+	if (customCursor.targetDom.classList.contains("mobile")) {
+	    customCursor.mobileDom.classList.remove("hide")
+    }
+
     isUpdateDisabled = false;
     document.getElementsByTagName("html")[0].style.cursor = "none";
 
     // animate();
-    if (clicked) {
+    if (clicked && isGoingBack !== false) {
         gsap.to( renderer.domElement, { duration: 1, opacity: 1, onComplete: doRotateMesh} );
     } else {
         customCursor.targetDom.classList.remove("show-transition");
@@ -817,7 +825,7 @@ const touchendEvent = (e) => {
 
     document.removeEventListener("touchmove", touchmoveEvent);
     document.removeEventListener("touchend", touchendEvent);
-    
+
     if (clicked) {
         // in tunnel
         if (customCursor.targetDom.classList.contains("show-project")) {
@@ -873,6 +881,8 @@ const touchendEvent = (e) => {
 }
 const touchstartEvent = (e) => {
 
+    // alert( customCursor.openmenu )
+
     if (customCursor.passthrough || customCursor.openmenu) {
         if (!document.getElementsByClassName("home_body")[0].classList.contains("openmenu")) {
             if ( customCursor.openmenu === true ) {
@@ -880,6 +890,7 @@ const touchstartEvent = (e) => {
                 customCursor.openmenu = false
             } 
         } else {
+            // clicked on dropdown menu
             return  
         } 
     }
@@ -905,15 +916,18 @@ const touchstartEvent = (e) => {
             // return
         }
     } else {
+        //// here goes menu buttons
+        // alert("list view")
         if (e.target.parentElement.classList.contains("dropdown_btn")) {
             // alert("dropdown_btn")
             if (!document.getElementsByClassName("home_body")[0].classList.contains("openmenu")) {
-                if ( customCursor.openmenu !== true ) {
-                    // alert("dropdown_btn")
-                    customCursor.openmenu = true
-                } else {
-                    customCursor.openmenu = false
-                }
+                // // alert("dropdown_btn")
+                // if ( customCursor.openmenu !== true ) {
+                //     // alert("dropdown_btn")
+                //     customCursor.openmenu = true
+                // } else {
+                //     customCursor.openmenu = false
+                // }
             }
         }
         return

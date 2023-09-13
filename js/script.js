@@ -183,6 +183,21 @@ function do_pushstate(link){
 	var currenturl = window.location.href;
 
 	if(currenturl.indexOf(link)>0){
+		if(link == "index.html") {
+			/* setTimeout is used so that the propagating click won't cause tunnel click */
+			setTimeout( ()=> {
+				$(".custom-cursor").removeClass("hide")
+				if($(".view_icon_wrapper li[data-view='tunnel']").hasClass("active")){
+					customCursor.disable = false;
+					$(".custom-cursor").removeClass("disable")
+					if (customCursor.targetDom.classList.contains("mobile")) {
+						customCursor.mobileDom.classList.remove("hide")
+					}
+				}
+				customCursor.cursorAnimate();
+			}, 0);
+			customCursor.openmenu = false
+		}
 	}else{
 		changeworld();
 	}
@@ -241,15 +256,25 @@ function init_event(){
 		if($(".dropdown_btn").hasClass("close")){
 			$(".dropdown_btn").removeClass("close");
 			$("body").removeClass("openmenu");
-			customCursor.disable = false;
-			$(".custom-cursor").removeClass("disable")
+			customCursor.openmenu = false;
 			$(".custom-cursor").removeClass("hide")
+			if($(".view_icon_wrapper li[data-view='tunnel']").hasClass("active")){
+				customCursor.disable = false;
+				$(".custom-cursor").removeClass("disable")
+				if (customCursor.targetDom.classList.contains("mobile")) {
+					customCursor.mobileDom.classList.remove("hide")
+				}
+			}
 		}else{
 			$(".dropdown_btn").addClass("close");
 			$("body").addClass("openmenu");
 			customCursor.disable = true;
 			$(".custom-cursor").addClass("disable")
 			$(".custom-cursor").addClass("hide")
+			customCursor.openmenu = true;
+			if (customCursor.targetDom.classList.contains("mobile")) {
+				customCursor.mobileDom.classList.add("hide")
+			}
 		}
 		return false;
 	})
@@ -399,8 +424,8 @@ function ajax_event(){
 		if($(".view_icon_wrapper li[data-view='tunnel']").hasClass("active")){
 			$(".home_col_4").stop().fadeOut(function(){
 				// customCursor.disable = false;
-				// $(".custom-cursor").removeClass("disable")
-				// $(".custom-cursor").removeClass("hide")
+				$(".custom-cursor").removeClass("disable")
+				$(".custom-cursor").removeClass("hide")
 				switchTunnelView()
 				$(".home_col_4").removeClass("finish")
 			});
