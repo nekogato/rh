@@ -914,6 +914,18 @@ canvas{
 @media screen and (max-width: 1023px) { 
 
 
+	.mm_chi_logo {
+		left: 15px;
+		bottom: 15px;
+		width: 30%;
+	}
+
+	.home_mm_logo {
+		right: 15px;
+		bottom: 15px;
+		width: 10%;
+	}
+    
 	/* curatorial_content */
 
 	.curatorial_content .description .col_wrapper .col{
