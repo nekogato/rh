@@ -651,6 +651,18 @@ canvas{
     align-self: flex-start;
 }
 
+.project_detail_content .description .free_text.free_text_column{
+    margin-right: auto;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: -30px;
+}
+.project_detail_content .description .free_text.free_text_column > p{
+    width: 50%;
+    margin-top: 30px;
+}
+
+
 .project_detail_content .sticky_text_wrapper{
 }
 
@@ -797,8 +809,14 @@ canvas{
 
 .schedule_item .schedule_title{
     font-family: 'OT Missouri 16mm', "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
+    margin-top: 30px;
     color: #b0b0b0;
 }
+
+.schedule_item .schedule_title:first-child{
+    margin-top: auto;
+}
+
 
 .schedule_description{
 	font-family: "Neue Montreal", "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
@@ -807,7 +825,7 @@ canvas{
 }
 
 .schedule_btn_wrapper{
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 .schedule_btn_wrapper a{
@@ -845,6 +863,36 @@ canvas{
 .schedule_item .chi{
     font-family: "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
 	letter-spacing: 0.05em;
+}
+
+
+/* logo_item_wrapper */
+
+.logo_item_wrapper_wrapper{
+    margin-top: 60px;
+}
+
+.logo_item_wrapper{
+    display: flex;
+    margin: -20px;
+}
+
+.logo_item{
+    margin: 20px;
+}
+
+.logo_item_wrapper .logos{
+    display: flex;
+    margin-top: 20px;
+    margin-left: -20px;
+    margin-right: -20px;
+}
+
+.logo_item_wrapper .logos img{
+    height: 60px;
+    width: auto;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 
