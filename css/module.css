@@ -152,6 +152,11 @@ canvas{
     overflow: hidden;
 }
 
+.home_col_big{
+    width: 100%;
+    height: 50%;
+}
+
 .home_col .bg{
 	-webkit-transition: all 0.6s  cubic-bezier(0.77, 0, 0.175, 1);
     transition: all 0.6s  cubic-bezier(0.77, 0, 0.175, 1);
@@ -826,6 +831,10 @@ canvas{
     text-align: center;
 }
 
+.schedule_description:first-child{
+    margin-top: auto;
+}
+
 .schedule_btn_wrapper{
     margin-top: 30px;
 }
@@ -876,11 +885,14 @@ canvas{
 
 .logo_item_wrapper{
     display: flex;
-    margin: -20px;
+    margin: -60px -20px;
+}
+.logo_item_wrapper2{
+    display: block;
 }
 
 .logo_item{
-    margin: 20px;
+    margin: 60px 20px;
 }
 
 .logo_item_wrapper .logos{
@@ -909,6 +921,18 @@ canvas{
 @media screen and (max-width: 1023px) { 
 
 
+	.mm_chi_logo {
+		left: 15px;
+		bottom: 15px;
+		width: 30%;
+	}
+
+	.home_mm_logo {
+		right: 15px;
+		bottom: 15px;
+		width: 10%;
+	}
+    
 	/* curatorial_content */
 
 	.curatorial_content .description .col_wrapper .col{

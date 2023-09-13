@@ -897,6 +897,10 @@ h1:first-child,h2:first-child,h3:first-child,h4:first-child,h5:first-child,h6:fi
 
 @media screen and (max-width: 1023px) { 
 
+	.home_body .header .header_logo {
+		font-size: calc(12px + 3.0vw);
+	}
+
 	.header_bg{
 		height: 40px;
 	}
