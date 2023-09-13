@@ -36,6 +36,7 @@
 .content_title_wrapper{
     font-family: 'OT Missouri 16mm', "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
     text-align: center;
+    position: relative;
 }
 
 .content_title_wrapper .chi{
@@ -639,9 +640,28 @@ canvas{
     display: flex;
 }
 
+.project_detail_content .description:first-child{
+    margin-top: auto;
+}
+
 .project_detail_content .description .free_text{
     margin-right: 200px;
+    position: sticky;
+    top:135px;
+    align-self: flex-start;
 }
+
+.project_detail_content .description .free_text.free_text_column{
+    margin-right: auto;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: -30px;
+}
+.project_detail_content .description .free_text.free_text_column > p{
+    width: 50%;
+    margin-top: 30px;
+}
+
 
 .project_detail_content .sticky_text_wrapper{
 }
@@ -789,23 +809,35 @@ canvas{
 
 .schedule_item .schedule_title{
     font-family: 'OT Missouri 16mm', "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
+    margin-top: 30px;
     color: #b0b0b0;
 }
+
+.schedule_item .schedule_title:first-child{
+    margin-top: auto;
+}
+
 
 .schedule_description{
 	font-family: "Neue Montreal", "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
     margin-top: 30px;
+    text-align: center;
 }
 
 .schedule_btn_wrapper{
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 .schedule_btn_wrapper a{
 	font-family: "Neue Montreal", "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
     display: inline-block;
-    border:1px solid #b0b0b0;
+    border:1px solid #000;
     padding: 2px 40px 2px;
+    color:#000;
+}
+
+.black_body .schedule_btn_wrapper a{
+    border:1px solid #b0b0b0;
     color:#b0b0b0;
 }
 
@@ -818,9 +850,15 @@ canvas{
 }
 
 .schedule_btn_wrapper a:hover{
+    background-color: #000;
+    color:#b0b0b0;
+}
+
+.black_body .schedule_btn_wrapper a:hover{
     background-color: #b0b0b0;
     color:#000;
 }
+
 
 .schedule_item .chi{
     font-family: "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
@@ -828,7 +866,37 @@ canvas{
 }
 
 
-@media screen and (max-width: 1680px) { 
+/* logo_item_wrapper */
+
+.logo_item_wrapper_wrapper{
+    margin-top: 60px;
+}
+
+.logo_item_wrapper{
+    display: flex;
+    margin: -20px;
+}
+
+.logo_item{
+    margin: 20px;
+}
+
+.logo_item_wrapper .logos{
+    display: flex;
+    margin-top: 20px;
+    margin-left: -20px;
+    margin-right: -20px;
+}
+
+.logo_item_wrapper .logos img{
+    height: 60px;
+    width: auto;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+
+@media screen and (max-width: 1280px) { 
 
     .project_detail_content .description .free_text {
         margin-right: 60px;
@@ -838,6 +906,46 @@ canvas{
 
 @media screen and (max-width: 1023px) { 
 
+
+	/* curatorial_content */
+
+	.curatorial_content .description .col_wrapper .col{
+		float: none;
+		width: 100%;
+	}
+
+	.curatorial_content .description .col_wrapper .col + .col{
+		padding-top: 60px;
+		margin-top: 60px;
+		border-top:1px solid #000;
+		float: none;
+	}
+
+	.curatorial_content .description::after {
+		display: none;
+	  }
+
+	/* line_introduction */
+
+	.line_introduction .col_wrapper .col{
+		float: none;
+		width: 100%;
+	}
+
+	.line_introduction .col_wrapper .col + .col{
+		margin-top: 60px;
+		float: none;
+	}
+
+    .black_body .line_introduction .col_wrapper .col + .col{
+		/* border-top:1px solid #b0b0b0; */
+	}
+
+	.line_introduction::after {
+		display: none;
+	  }
+
+    /* project_detail_content */
 
     .project_detail_content + .project_detail_content::before{
         left: 15px;
@@ -850,6 +958,8 @@ canvas{
 
     .project_detail_content .description .free_text {
         margin-right: auto;
+        position: relative;
+        top:auto;
       }
 
       .project_detail_content .sticky_text_wrapper {
@@ -864,6 +974,7 @@ canvas{
         width: auto;
         position: relative;
         top: auto;
+        padding-bottom: 0px;
       }
 
       .art_popup{
@@ -882,5 +993,4 @@ canvas{
     }
 
       
-
 }
