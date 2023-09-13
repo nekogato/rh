@@ -9,6 +9,8 @@ var spacing = 1.5;
 var currenttunnelindex = 0;
 var clock = new THREE.Clock();
 var delta = 0;
+var smoothness = 2;
+var division = 140 * smoothness;
 var tunnelGlobal = { speed: 0.001,repeatX: 3, repeatY:3 };
 var ww = window.innerWidth;
 var wh = window.innerHeight;
@@ -217,7 +219,7 @@ var addTunnelElement = function(url, x, hue){
     var curve = new THREE.CatmullRomCurve3(points);
 
     var geometry = new THREE.BufferGeometry();
-    geometry.vertices = curve.getPoints(140);
+    geometry.vertices = curve.getPoints(division);
     geometry.setFromPoints(geometry.vertices);
     var splineMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFF0000, depthTest: false, depthWrite: false}));
     splineMesh.renderOrder = 1
@@ -244,7 +246,7 @@ var addTunnelElement = function(url, x, hue){
     tubeMaterial2.map.wrapT = THREE.MirroredRepeatWrapping;
     tubeMaterial2.map.repeat.set(tunnelGlobal.repeatX, tunnelGlobal.repeatY);
 
-    var tubeGeometry = new THREE.TubeGeometry(curve, 140, 0.02, 30, false);
+    var tubeGeometry = new THREE.TubeGeometry(curve, division, 0.02, 30, false);
     //
     var tubeColors = new Float32Array(tubeGeometry.getAttribute("position").count * 3);
     var p = new THREE.Vector3();
@@ -264,7 +266,7 @@ var addTunnelElement = function(url, x, hue){
                 ) *
                 0.01 +
                 hue) +
-            ",140%,60%)"
+            ",100%,60%)"
         );
         color.convertSRGBToLinear();
         // f.color = color;
@@ -319,7 +321,7 @@ function updateCurve( noTransition ) {
         var positions = [];
         var normals = [];
         // for (i = 0; i < tunnelArr[k].geometry.vertices.length; i += 1) {
-        tunnelArr[k].geometry_o = new THREE.TubeGeometry(tunnelArr[k].curve, 140, 0.02, 30, false);
+        tunnelArr[k].geometry_o = new THREE.TubeGeometry(tunnelArr[k].curve, division, 0.02, 30, false);
 
         for (i = 0; i < tunnelArr[k].geometry.getAttribute("position").count; i+= 1) {
         
@@ -364,7 +366,7 @@ function updateCurve( noTransition ) {
             // lastZ = Math.min(5, Math.floor(i/31/141)) * -0.105;
             // lastZ = Math.min(5 * 8,Math.floor(i/31)) * -0.105 / 8;
             // if (k == 1 ) console.log(Math.min(5 * 8, Math.floor(i/31)))
-            lastZ = (Math.pow(Math.min(5 * 8, Math.floor(i/31)), 2) / 40 * 0.3 + Math.min(5 * 8, Math.floor(i/31)) * 0.7) * -0.105 / 8;
+            lastZ = (Math.pow(Math.min(5 * 8 * smoothness, Math.floor(i/31)), 2) / 40 / smoothness * 0.3 + Math.min(5 * 8 * smoothness, Math.floor(i/31)) * 0.7) * -0.085 / 8 / smoothness;
             // if (k === 1 ) console.log(Math.pow(Math.min(5 * 8,Math.floor(i/31)), 2) / 40);
         // }
         lastZ *= tunnelgroupZPositionRatio
@@ -425,7 +427,7 @@ function updateCurve( noTransition ) {
         tunnelArr[k].curve = new THREE.CatmullRomCurve3(tunnelArr[k].curve.points);
 
         // tunnelArr[k].splineMesh.geometry.verticesNeedUpdate = true;
-        tunnelArr[k].splineMesh.geometry.vertices = tunnelArr[k].curve.getPoints(140);
+        tunnelArr[k].splineMesh.geometry.vertices = tunnelArr[k].curve.getPoints(division);
         tunnelArr[k].splineMesh.geometry.setFromPoints(tunnelArr[k].splineMesh.geometry.vertices);
 
         // var mydelta = -1*delta* 0.5;
@@ -770,7 +772,7 @@ let finX, finY;
 let diffX, diffY;
 
 const touchmoveEvent = (e) => {
-    if (!customCursor.passthrough) {
+    if (!customCursor.passthrough && !customCursor.openmenu) {
         e.preventDefault();
     } else {
         return
@@ -807,8 +809,15 @@ const touchmoveEvent = (e) => {
 }
 
 const touchendEvent = (e) => {
+    if (!customCursor.passthrough && !customCursor.openmenu) {
+        e.preventDefault();
+    } else {
+        return
+    }
+
     document.removeEventListener("touchmove", touchmoveEvent);
     document.removeEventListener("touchend", touchendEvent);
+    
     if (clicked) {
         // in tunnel
         if (customCursor.targetDom.classList.contains("show-project")) {
@@ -863,20 +872,71 @@ const touchendEvent = (e) => {
     
 }
 const touchstartEvent = (e) => {
-    if (!customCursor.passthrough) e.preventDefault();
 
-    // alert(!customCursor.targetDom.classList.contains("show-transition"))
+    if (customCursor.passthrough || customCursor.openmenu) {
+        if (!document.getElementsByClassName("home_body")[0].classList.contains("openmenu")) {
+            if ( customCursor.openmenu === true ) {
+                // alert("turn off")
+                customCursor.openmenu = false
+            } 
+        } else {
+            return  
+        } 
+    }
+    
+    // alert(customCursor.passthrough + ", " +customCursor.openmenu)
+    // alert(e.target.parentElement)
+    // alert(document.getElementsByClassName("home_body")[0].classList)
+
+    if (
+        e.target.parentElement.parentElement.getAttribute("data-view") !== "list" &&
+        !e.target.parentElement.classList.contains("dropdown_btn") &&
+        !document.getElementsByClassName("home_body")[0].classList.contains("openmenu")
+    ) {
+        // alert(customCursor.passthrough !== true)
+        if (customCursor.passthrough !== true && customCursor.openmenu !==  true) {
+            e.preventDefault();
+        } else {
+            // if (e.target.parentElement.classList.contains("dropdown_btn")) {
+            //     if (document.getElementsByClassName("home_body")[0].classList.contains("openmenu")) {
+            //         offOpenMenu();
+            //     }
+            // }
+            // return
+        }
+    } else {
+        if (e.target.parentElement.classList.contains("dropdown_btn")) {
+            // alert("dropdown_btn")
+            if (!document.getElementsByClassName("home_body")[0].classList.contains("openmenu")) {
+                if ( customCursor.openmenu !== true ) {
+                    // alert("dropdown_btn")
+                    customCursor.openmenu = true
+                } else {
+                    customCursor.openmenu = false
+                }
+            }
+        }
+        return
+    }
     if (!customCursor.targetDom.classList.contains("show-transition")) {
 
         initX = e.touches[0].clientX
         initY = e.touches[0].clientY
         
+        finX = undefined
+        finY = undefined
+
+        diffX = undefined
+        diffY = undefined
+        
+        document.removeEventListener("touchmove", touchmoveEvent, {passive: false});
+        document.removeEventListener("touchend", touchendEvent);
         document.addEventListener("touchmove", touchmoveEvent, {passive: false});
         document.addEventListener("touchend", touchendEvent);
     }
 }
 const initTouchEvents = ( e ) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     console.log("initTouchEvent");
     document.removeEventListener("touchstart", initTouchEvents)
@@ -894,17 +954,22 @@ const initTouchEvents = ( e ) => {
 }
 
 function init() {
-    const clickEventHandler = (e) => {
+    const pointerDownHandler = (e) => {
+        document.removeEventListener("pointerdown", pointerDownHandler);
+        // console.log(e);
         if (e.pointerType !== "mouse") {
             if (!customCursor.targetDom.classList.contains("mobile")) {
-                console.log("hell")
+                // console.log("add mobile")
                 customCursor.targetDom.classList.add("mobile");
                 customCursor.mobileDom.classList.remove("hide");
                 // initTouchEvents()
                 // alert(e.pointerType);
             }
         }
-        if (!customCursor.disable && e.pointerType === "mouse" ){
+    }
+    const clickEventHandler = (e) => {
+        // console.log(e.pointerType);
+        if (!customCursor.disable && !customCursor.targetDom.classList.contains("mobile") ){
 
             // customCursor.targetDom.classList.add("clicked");
             // setTimeout( () => {customCursor.targetDom.classList.remove("clicked");}, 250);
@@ -950,6 +1015,7 @@ function init() {
     }
 
     customCursor = new CustomCursor();
+    document.addEventListener("pointerdown", pointerDownHandler);
     document.addEventListener("click", clickEventHandler);
     document.addEventListener("touchstart", initTouchEvents, {passive: false});
     

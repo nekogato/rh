@@ -172,6 +172,7 @@ canvas{
 
 .home_col:hover .bg{
     opacity: 0.3;
+    background-size: auto;
     animation: roller 10s linear infinite;
 }
 
@@ -209,6 +210,7 @@ canvas{
 
 .home_body{
     cursor: none;
+    /* touch-action: none; */
 }
 
 .home_body a{
