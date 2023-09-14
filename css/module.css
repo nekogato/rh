@@ -925,6 +925,10 @@ canvas{
 
 @media screen and (max-width: 1023px) { 
 
+    .view_icon_wrapper ul {
+        padding: 5px;
+      }
+
 
 	.mm_chi_logo {
 		left: 15px;
