@@ -335,6 +335,20 @@ a{
 	left: 100px;
 	margin: auto;  
 	overflow: auto;
+	scrollbar-color: #666 #222;
+	scrollbar-width: thin;
+}
+
+.dropdown_spacing::-webkit-scrollbar {
+    width: 12px;
+}
+.dropdown_spacing::-webkit-scrollbar-track {
+    background-color: #222;
+}
+.dropdown_spacing::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 6px;
+    border: 3px solid #222;
 }
 
 .main_menu{

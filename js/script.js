@@ -424,8 +424,8 @@ function ajax_event(){
 		if($(".view_icon_wrapper li[data-view='tunnel']").hasClass("active")){
 			$(".home_col_4").stop().fadeOut(function(){
 				// customCursor.disable = false;
-				$(".custom-cursor").removeClass("disable")
-				$(".custom-cursor").removeClass("hide")
+				// $(".custom-cursor").removeClass("disable")
+				// $(".custom-cursor").removeClass("hide")
 				switchTunnelView()
 				$(".home_col_4").removeClass("finish")
 			});

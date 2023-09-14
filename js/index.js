@@ -754,8 +754,14 @@ const resumeUpdate = ( isGoingBack ) => {
     document.getElementsByTagName("html")[0].style.cursor = "none";
 
     // animate();
-    if (clicked && isGoingBack !== false) {
-        gsap.to( renderer.domElement, { duration: 1, opacity: 1, onComplete: doRotateMesh} );
+    if (clicked) {
+        if (isGoingBack === false) {
+            //// back from list view?
+            // console.log("clicked && back from list view");
+            doEnterTunnel(true)
+        } else {
+            gsap.to( renderer.domElement, { duration: 1, opacity: 1, onComplete: doRotateMesh} );
+        }
     } else {
         customCursor.targetDom.classList.remove("show-transition");
         customCursor.cursorAnimate();
@@ -921,14 +927,18 @@ const touchstartEvent = (e) => {
         if (e.target.parentElement.classList.contains("dropdown_btn")) {
             // alert("dropdown_btn")
             if (!document.getElementsByClassName("home_body")[0].classList.contains("openmenu")) {
-                // // alert("dropdown_btn")
-                // if ( customCursor.openmenu !== true ) {
-                //     // alert("dropdown_btn")
-                //     customCursor.openmenu = true
-                // } else {
-                //     customCursor.openmenu = false
-                // }
+                // alert("dropdown_btn")
+                if ( customCursor.openmenu !== true ) {
+                    // alert("dropdown_btn")
+                    customCursor.openmenu = true
+                } else {
+                    customCursor.openmenu = false
+                }
             }
+        } else {
+            //// clicked on "list"?
+            // alert("list")
+            customCursor.passthrough = true
         }
         return
     }
@@ -1102,7 +1112,8 @@ function init() {
                 ease: Power1.easeInOut,
             });
             setTimeout(function(){
-                if (tunnelgroup.position.x === -currenttunnelindex * spacing) {
+                // if (tunnelgroup.position.x === -currenttunnelindex * spacing) {
+                if ( Math.abs(-currenttunnelindex * spacing - tunnelgroup.position.x) <= 0.01 ) {
                     customCursor.targetDom.classList.remove("show-transition");
                     customCursor.cursorAnimate();
                 } else {
@@ -1137,7 +1148,7 @@ function init() {
 
     }
 
-    function enterTunnel () {
+    function enterTunnel(immediate) {
         clicked = true;
         clearTimeout(looptimer);
         clearTimeout(looptimer2);
@@ -1149,26 +1160,27 @@ function init() {
             ease: Power1.easeInOut,
         });
 
-        function animate1(){
+        function animate1(immediate){
             if(clicked){
-                
-                looptimer = setTimeout(function(){
-                    logo1.classList.add("in-tunnel");
-                    gsap.to(tunnelArr[currenttunnelindex], {
-                        duration: 4,
-                        repeatX: 0.5, 
-                        repeatY: 3, 
-                        speed: 0.005,
-                        ease: Power1.easeInOut,
-                        onUpdate: function() {
-                            tunnelArr[currenttunnelindex].material2.map.repeat.set(
-                                tunnelArr[currenttunnelindex].repeatX,
-                                tunnelArr[currenttunnelindex].repeatY
-                            );
-                            tunnelArr[currenttunnelindex].material2.map.offset.x += tunnelArr[currenttunnelindex].speed;
-                        }
-                    });
-                },0)
+                if (immediate != true) {
+                    looptimer = setTimeout(function(){
+                        logo1.classList.add("in-tunnel");
+                        gsap.to(tunnelArr[currenttunnelindex], {
+                            duration: 4,
+                            repeatX: 0.5, 
+                            repeatY: 3, 
+                            speed: 0.005,
+                            ease: Power1.easeInOut,
+                            onUpdate: function() {
+                                tunnelArr[currenttunnelindex].material2.map.repeat.set(
+                                    tunnelArr[currenttunnelindex].repeatX,
+                                    tunnelArr[currenttunnelindex].repeatY
+                                );
+                                tunnelArr[currenttunnelindex].material2.map.offset.x += tunnelArr[currenttunnelindex].speed;
+                            }
+                        });
+                    },0)
+                }
 
                 looptimer2 = setTimeout(function(){
                     if(clicked){
@@ -1211,19 +1223,22 @@ function init() {
                         clearTimeout(looptimer);
                         clearTimeout(looptimer2);
                     }
-                },4000)
+                }, immediate ? 0 : 4000)
             }else{
                 clearTimeout(looptimer);
                 clearTimeout(looptimer2);
             }
         }
 
-        animate1();
+        animate1(immediate);
 
-        
-        setTimeout(function(){
+        if (immediate) {
             startanimate=true;
-        },3000)
+        } else {
+            setTimeout(function(){
+                startanimate=true;
+            },3000)
+        }
 
 
     }
@@ -1258,16 +1273,16 @@ function init() {
     })
 
 
-    const pointLight = new THREE.PointLight( 0xFFFFFF, 20, 1.5, 2)
-    pointLight.position.set(-0.5, 0.5, 0)
-    scene.add(pointLight)
+    // const pointLight = new THREE.PointLight( 0xFFFFFF, 20, 2, 2)
+    // pointLight.position.set(-1, 1, 1)
+    // scene.add(pointLight)
 
-    const pointLightLocator = new THREE.Mesh(
-        new THREE.SphereGeometry(0.01),
-        new THREE.MeshNormalMaterial()
-    )
-    pointLightLocator.position.copy(pointLight.position);
-    scene.add(pointLightLocator);
+    // const pointLightLocator = new THREE.Mesh(
+    //     new THREE.SphereGeometry(0.01),
+    //     new THREE.MeshNormalMaterial()
+    // )
+    // pointLightLocator.position.copy(pointLight.position);
+    // scene.add(pointLightLocator);
 
 
     // const geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 ); 
