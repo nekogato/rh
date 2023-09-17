@@ -430,6 +430,9 @@ function ajax_event(){
 				$(".home_col_4").removeClass("finish")
 			});
 		}else{
+			if (customCursor !== undefined && customCursor.sideDom !== undefined) {
+				customCursor.sideDom.classList.add("halt");
+			}
 			$(".home_col_4").stop().fadeIn(function(){
 				// customCursor.disable = true;
 				// $(".custom-cursor").addClass("disable")

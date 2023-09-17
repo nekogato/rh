@@ -1,7 +1,8 @@
 var camera, scene, renderer,composer, mouseX, mouseY, windowHalfX, windowHalfY;
 var controls;
 var tunnelgroup;
-var tunnelArr=[];
+var tunnelArr = [];
+var textureLoadedNum = 0;
 var clicked = false;
 var startanimate = false;
 var step = 0;
@@ -144,7 +145,15 @@ const extendCurve2 = ( points ) => {
     points[15].z = 1.4;
     points[16].z = 2;
 }
-
+const textureLoaded = () => {
+    textureLoadedNum++
+    if (tunnelArr.length - textureLoadedNum == 0) {
+        for (var k=0; k < tunnelArr.length; k++) {
+            gsap.to(tunnelgroup.children[k].children[1].material, 1, {opacity: 1});
+            gsap.to(tunnelgroup.children[k].children[0].material, 1, {opacity: 1});
+        }
+    }
+}
 var addTunnelElement = function(url, x, hue){
     var points = [];
     var i = 0;
@@ -223,22 +232,27 @@ var addTunnelElement = function(url, x, hue){
     geometry.setFromPoints(geometry.vertices);
     var splineMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFF0000, depthTest: false, depthWrite: false}));
     splineMesh.renderOrder = 1
-
-	var tubeTexture = new THREE.TextureLoader().load(url);
+    
+	var tubeTexture = new THREE.TextureLoader().load(url, () => { textureLoaded() });
 
     var tubeMaterial2 = new THREE.MeshBasicMaterial({
         side: THREE.BackSide,
         map: tubeTexture,
         toneMapped: false,
+        transparent: true,
+        opacity: 0
     });
 
     // var tubeMaterial = new THREE.MeshBasicMaterial({
     var tubeMaterial = new THREE.MeshPhysicalMaterial({
         side: THREE.FrontSide,
+        // side: THREE.DoubleSide,
         // vertexColors: THREE.FaceColors
         vertexColors: true,
         sheen: 0.75,
         sheenColor: new THREE.Color("hsl("+ hue+270 + ", 100%, 60%)"),
+        transparent: true,
+        opacity: 0
     });
 
     // Repeat the pattern
@@ -518,14 +532,18 @@ function CustomCursor() {
     // document.body.append(targetDom);
     let targetDom = document.getElementsByClassName("custom-cursor")[0];
     let mobileDom = document.getElementsByClassName("mobile-center-wrapper")[0];
+    let sideDom = document.getElementsByClassName("side-wrapper")[0];
     targetDom.style.transform = "translate(" + (window.innerWidth/2) + "px, " + (window.innerHeight/2) + "px)";
     this.targetDom = targetDom;
     this.mobileDom = mobileDom;
+    this.sideDom = sideDom;
 
     let projectPlate = targetDom.getElementsByClassName("cursor-project-plate")[0];
     let mobileProjectPlate = mobileDom.getElementsByClassName("mobile-project-plate")[0];
+    let sideProjectPlate = sideDom.getElementsByClassName("side-project-plate")[0];
     this.projectPlate = projectPlate;
     this.mobileProjectPlate = mobileProjectPlate;
+    this.sideProjectPlate = sideProjectPlate;
 
     const mouseenter = (e) => {
         if (customCursor.targetDom.classList.contains("mobile")) return
@@ -608,25 +626,27 @@ function CustomCursor() {
             targetDom.style.transform = "translate(" + destX + "px, " + destY + "px)";
             // targetDom.style.opacity = 1;
 
-            if (clicked && targetDom.classList.contains("show-project")) {
-                // console.log(projectPlate)
-                projectPlate.style.left = ((0.5 - xRatio) * 100 + 50) + "%";
-                projectPlate.style.top = ((0.5 - yRatio) * 100 + 50) + "%";
-            }
+            if (!projectPlate.classList.contains("disable")) {
+                if (clicked && targetDom.classList.contains("show-project")) {
+                    // console.log(projectPlate)
+                    projectPlate.style.left = ((0.5 - xRatio) * 100 + 50) + "%";
+                    projectPlate.style.top = ((0.5 - yRatio) * 100 + 50) + "%";
+                }
 
-            if (clicked && targetDom.classList.contains("show-project")) {
-                // console.log(xRatio - 0.5);
-                xPull = 0.5 - xRatio
-                yPull = 0.5 - yRatio
-                if ( xRatio > 0.5) {
-                    xPull = xRatio - 0.5
+                if (clicked && targetDom.classList.contains("show-project")) {
+                    // console.log(xRatio - 0.5);
+                    xPull = 0.5 - xRatio
+                    yPull = 0.5 - yRatio
+                    if ( xRatio > 0.5) {
+                        xPull = xRatio - 0.5
+                    }
+                    if ( yRatio > 0.5) {
+                        yPull = yRatio - 0.5
+                    }
+                    targetDom.style.transform = "translate(" 
+                    + (destX * xPull/ 0.25 * 0.5 + (1 - xPull/ 0.25 * 0.5) * (0.5  * window.innerWidth)) + "px, "
+                    + (destY * yPull/ 0.25 * 0.5 + (1 - yPull/ 0.25 * 0.5) * (0.5  * window.innerHeight)) + "px)";
                 }
-                if ( yRatio > 0.5) {
-                    yPull = yRatio - 0.5
-                }
-                targetDom.style.transform = "translate(" 
-                + (destX * xPull/ 0.25 * 0.5 + (1 - xPull/ 0.25 * 0.5) * (0.5  * window.innerWidth)) + "px, "
-                + (destY * yPull/ 0.25 * 0.5 + (1 - yPull/ 0.25 * 0.5) * (0.5  * window.innerHeight)) + "px)";
             }
 
         if (!customCursor.disable){
@@ -638,6 +658,7 @@ function CustomCursor() {
                 if (clicked) {
                     // in-tunnel
                     if (Math.sqrt((0.5 -xRatio) * (0.5 - xRatio) + (0.5 - yRatio) * (0.5 - yRatio)) < 0.25) {
+                    // if (xRatio < 0.67) {
                         targetDom.classList.add("show-project");
                         targetDom.classList.remove("show-exit");
                     } else {
@@ -733,6 +754,7 @@ const haltUpdate = () => {
     if (customCursor.targetDom.classList.contains("mobile")) {
 	    customCursor.mobileDom.classList.add("hide")
     }
+    customCursor.sideDom.classList.add("hide");
 
     isUpdateDisabled = true;
     document.getElementsByTagName("html")[0].style.cursor = "";
@@ -749,6 +771,9 @@ const resumeUpdate = ( isGoingBack ) => {
 	if (customCursor.targetDom.classList.contains("mobile")) {
 	    customCursor.mobileDom.classList.remove("hide")
     }
+
+    customCursor.sideDom.classList.remove("halt");
+    customCursor.sideDom.classList.remove("hide");
 
     isUpdateDisabled = false;
     document.getElementsByTagName("html")[0].style.cursor = "none";
@@ -839,12 +864,14 @@ const touchendEvent = (e) => {
                 customCursor.targetDom.classList.add('show-transition');
                 customCursor.targetDom.classList.remove('show-project');
                 customCursor.mobileDom.classList.remove('show-project');
+                customCursor.sideDom.classList.remove('show-project');
                 prepareToShowProject();
             } else {
                 if (diffY < -0.2) {
                     customCursor.targetDom.classList.add('show-transition');
                     customCursor.targetDom.classList.remove('show-project');
                     customCursor.mobileDom.classList.remove('show-project');
+                    customCursor.sideDom.classList.remove('show-project');
                     doRotateMesh();
                 }
             }
@@ -975,9 +1002,14 @@ const initTouchEvents = ( e ) => {
 
     customCursor.targetDom.classList.add("mobile");
     customCursor.mobileDom.classList.remove("hide");
+    customCursor.sideDom.classList.remove("hide");
 }
 
 function init() {
+    const firstMousemoveHandler = (e) => {
+        customCursor.targetDom.classList.remove("hide");
+        document.removeEventListener("mousemove", firstMousemoveHandler);
+    }
     const pointerDownHandler = (e) => {
         document.removeEventListener("pointerdown", pointerDownHandler);
         // console.log(e);
@@ -986,6 +1018,7 @@ function init() {
                 // console.log("add mobile")
                 customCursor.targetDom.classList.add("mobile");
                 customCursor.mobileDom.classList.remove("hide");
+                customCursor.sideDom.classList.remove("hide");
                 // initTouchEvents()
                 // alert(e.pointerType);
             }
@@ -1010,6 +1043,7 @@ function init() {
                         if (customCursor.targetDom.classList.contains("show-project")) {
                             customCursor.targetDom.classList.add('show-transition');
                             customCursor.targetDom.classList.remove('show-project');
+                            customCursor.sideDom.classList.remove('show-project');
                             prepareToShowProject();
                         }
                     // }
@@ -1041,6 +1075,7 @@ function init() {
     }
 
     customCursor = new CustomCursor();
+    document.addEventListener("mousemove", firstMousemoveHandler);
     document.addEventListener("pointerdown", pointerDownHandler);
     document.addEventListener("click", clickEventHandler);
     document.addEventListener("touchstart", initTouchEvents, {passive: false});
@@ -1099,6 +1134,7 @@ function init() {
         }
 
         if ( clicked ) {
+            customCursor.sideDom.classList.remove("show-project");
             customCursor.mobileDom.classList.remove("show-project");
             customCursor.targetDom.classList.remove("show-project");
             customCursor.targetDom.classList.remove("show-left");
@@ -1106,7 +1142,9 @@ function init() {
             customCursor.targetDom.classList.remove("show-exit");
             customCursor.targetDom.classList.add("show-transition");
 
+            if (logo1 == undefined) console.log('!!!!')
             logo1.classList.remove("in-tunnel");
+            document.getElementsByClassName("home_content")[0].classList.remove("in-tunnel");
             gsap.to(tunnelgroup.position, {
                 duration: 3,
                 y: 0, 
@@ -1163,10 +1201,11 @@ function init() {
         });
 
         function animate1(immediate){
-            if(clicked){
+            if(clicked && !customCursor.targetDom.classList.contains("disable")){
                 if (immediate != true) {
                     looptimer = setTimeout(function(){
                         logo1.classList.add("in-tunnel");
+                        document.getElementsByClassName("home_content")[0].classList.add("in-tunnel");
                         gsap.to(tunnelArr[currenttunnelindex], {
                             duration: 4,
                             repeatX: 0.5, 
@@ -1188,6 +1227,7 @@ function init() {
                     if(clicked){
                         customCursor.projectPlate.innerHTML = projectTitles[currenttunnelindex];
                         customCursor.mobileProjectPlate.innerHTML = projectTitles[currenttunnelindex];
+                        customCursor.sideProjectPlate.innerHTML = projectTitles[currenttunnelindex];
                         if (customCursor.targetDom.classList.contains("show-transition")) {
                             // first time after getting in tunnel
                             customCursor.targetDom.classList.remove("show-transition");
@@ -1198,6 +1238,7 @@ function init() {
                             ) {
                                 customCursor.targetDom.classList.add("show-project");
                                 customCursor.mobileDom.classList.add("show-project");
+                                customCursor.sideDom.classList.add("show-project");
                             }
                             customCursor.cursorAnimate()
                         }

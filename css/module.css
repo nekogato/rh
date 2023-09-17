@@ -257,6 +257,11 @@ canvas{
     bottom:50px;
     width: 15%;
     z-index: 1;
+    transition: all 1.2s cubic-bezier(0.77, 0, 0.175, 1) 0s;
+}
+
+.home_content.in-tunnel .mm_chi_logo {
+    width: 10%;
 }
 
 .home_mm_logo{
@@ -372,7 +377,7 @@ canvas{
     transition: transform 200ms;
 }
 
-.center-wrapper .cursor-left, .center-wrapper .cursor-right, .center-wrapper .cursor-enter, .center-wrapper .cursor-exit {
+.center-wrapper .cursor-left, .center-wrapper .cursor-right, .center-wrapper .cursor-enter, .center-wrapper .cursor-exit, .center-wrapper .cursor-view {
     display: block;
     position: absolute;
     content: " ";
@@ -397,11 +402,15 @@ canvas{
 .cursor-exit {
     background-image: url("../img/cursor-exit.png");
 }
+.cursor-view {
+    background-image: url("../img/cursor-view-2.png");
+}
 
 :not(.show-left) > div > div > .cursor-left,
 :not(.show-right) > div > div > .cursor-right,
 :not(.show-enter) > div > div > .cursor-enter,
-:not(.show-exit) > div > div > .cursor-exit {
+:not(.show-exit) > div > div > .cursor-exit,
+:not(.show-project) > div > div > .cursor-view {
     transition: transform 100ms ease-out, opacity 100ms ease-out;
     transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
@@ -416,6 +425,10 @@ canvas{
     /* transform: translate(-50%, -50%); */
     font-family: 'OT Missouri 16mm';
     text-align: center;
+}
+
+.cursor-project-plate.disable {
+    display: none;
 }
 
 .custom-cursor > div > .center-wrapper, .mobile-center-wrapper {
@@ -436,13 +449,16 @@ canvas{
 .show-left > div > .center-wrapper,
 .show-right > div > .center-wrapper, 
 .show-enter > div > .center-wrapper,
-.show-exit > div > .center-wrapper {
+.show-exit > div > .center-wrapper,
+.show-view > div > .center-wrapper {
     width: 88px;
     height: 88px;
 }
 .show-project > div > .center-wrapper {
-    width: 512px;
-    height: 512px;
+    /* width: 512px;
+    height: 512px; */
+    width: 88px;
+    height: 88px;
 }
 .show-transition > div > .center-wrapper, .show-end > div > .center-wrapper {
     width: 16px;
@@ -463,10 +479,12 @@ canvas{
     transition: all 500ms, left 0ms ease-out, top 0ms ease-out;
     /* transition: all 500ms, transform 2s; */
 }
-.cursor-project-plate > h1, .mobile-project-plate > h1 {
+.cursor-project-plate > h1, .mobile-project-plate > h1, .side-project-plate > h1 {
     margin-top: 0px;
 }
-:not(.show-project) > div > div > .cursor-project-plate, :not(.show-project) > .mobile-project-plate {
+:not(.show-project) > div > div > .cursor-project-plate, 
+:not(.show-project) > .mobile-project-plate, 
+:not(.show-project) > .mobile-project-plate {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.17185);
 }
@@ -491,8 +509,49 @@ canvas{
     transform: translate(-50%, -50%) scale(0.75);
 }
 
-.mobile-center-wrapper.hide {
+.mobile-center-wrapper {
     display: none;
+}
+.side-project-plate {
+    position: absolute;
+    width: 512px;
+    height: 512px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    font-family: 'OT Missouri 16mm';
+    text-align: left;
+    left: 0;
+    top: 50%;
+    transform: translate(0%, -50%) scale(1);
+    transition: all 500ms, left 0ms ease-out, top 0ms ease-out;
+}
+.side-wrapper {
+    position: fixed;
+    width: 512px;
+    height: 512px;
+    left: 50px;
+    top: 50%;
+    transform: translate(0%, -50%) scale(1);
+    transform-origin: left center;
+    transition: transform 200ms ease-out, opacity 1000ms ease-out;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.show-project.side-wrapper {
+    opacity: 1;
+    transform: translate(0%, -50%) scale(1);
+}
+
+.side-wrapper.halt {
+    opacity: 0;
+    transition: transform 200ms ease-out, opacity 250ms ease-out;
+}
+
+.side-wrapper.hide {
+    opacity: 0;
 }
 
 
@@ -956,12 +1015,27 @@ canvas{
 		width: 30%;
 	}
 
+    .home_content.in-tunnel .mm_chi_logo {
+		width: 20%;
+	}
+
 	.home_mm_logo {
 		right: 15px;
 		bottom: 15px;
 		width: 10%;
 	}
     
+    .side-project-plate {
+        width: 256px;
+        height: 256px;
+    }
+    
+    .side-wrapper {
+        left: 15px;
+        width: 256px;
+        height: 256px;
+    }
+
 	/* curatorial_content */
 
 	.curatorial_content .description .col_wrapper .col{
