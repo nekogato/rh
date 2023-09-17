@@ -106,7 +106,17 @@
     opacity: 0;
     pointer-events: none;
 }
-
+.view_icon_wrapper ul li:nth-child(1){
+    transform: rotate(90deg);
+}
+.view_icon_wrapper ul li:nth-child(2){
+    transform: rotate(-90deg);
+}
+.view_icon_wrapper ul li:nth-child(2) span{
+    transform: rotate(180deg);
+    padding-right: 10px;
+    padding-left: 40px;
+}
 .view_icon_wrapper ul li.active span, .view_icon_wrapper ul li:hover span{
     opacity: 1;
     pointer-events: auto;
@@ -141,7 +151,13 @@ canvas{
     cursor: auto;
     display: none;
 }
-
+.home_col_4, .home_col_4 > div
+/* , .home_col_4 > div > div */
+/* , .home_col_4 > div > a  */
+{
+    user-select: none;
+    -webkit-user-select: none;
+}
 .home_col{
     width: 50%;
     height: 50%;

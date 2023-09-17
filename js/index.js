@@ -1017,12 +1017,14 @@ function init() {
                     // outside tunnel
                     if (customCursor.xRatio < 0.25) {
                         if(currenttunnelindex >= 1){
+                            customCursor.targetDom.classList.remove('show-left');
                             currenttunnelindex--;
                             rotateMesh();
                         }
                     }
                     if (customCursor.xRatio > 0.75) {
                         if(currenttunnelindex < tunnelArr.length-1){
+                            customCursor.targetDom.classList.remove('show-right');
                             currenttunnelindex++;
                             rotateMesh();
                         }
@@ -1189,7 +1191,6 @@ function init() {
                         if (customCursor.targetDom.classList.contains("show-transition")) {
                             // first time after getting in tunnel
                             customCursor.targetDom.classList.remove("show-transition");
-                            customCursor.cursorAnimate()
                             if (
                                 !customCursor.targetDom.classList.contains("show-exit")
                                 // !customCursor.targetDom.classList.contains("show-left")
@@ -1198,6 +1199,7 @@ function init() {
                                 customCursor.targetDom.classList.add("show-project");
                                 customCursor.mobileDom.classList.add("show-project");
                             }
+                            customCursor.cursorAnimate()
                         }
 
                         gsap.to(tunnelArr[currenttunnelindex], {
