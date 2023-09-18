@@ -26,14 +26,14 @@ var isUpdateDisabled = false;
 
 var logo1;
 const projectTitles = [
-    `<h1 class="text1">Confidential<br>Records<br>●<br>Vvzela Kook</h1>`,
-    `<h1 class="text1">The Lost<br>Metropolis State Theatre<br>●<br>Shiu Ka Heng</h1>`,
+    `<h1 class="text1">The Lost Metropolis<br><strong class="chi">情香迷港</strong><br><div class="text5 ">●<br>Shiu Ka Heng <strong class="chi">蕭家恒</strong></div></h1>`,
+    `<h1 class="text1">Intersections<br><strong class="chi">相交點<strong><br><div class="text5 ">●<br>Shiu Ka Heng <strong class="chi">蕭家恒</strong></div></h1>`,
     `<h1 class="text1">Confidential<br>Records<br>●<br>Vvzela Kook</h1>`,
     `<h1 class="text1">The Lost<br>Metropolis State Theatre<br>●<br>Shiu Ka Heng</h1>`,
 ]
 const projectLinks = [
-    'project1.html',
-    'project1.html',
+    'the_lost_metropolis.html',
+    'intersections.html',
     'project1.html',
     'project1.html',
 ]
