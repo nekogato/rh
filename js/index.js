@@ -532,10 +532,12 @@ function CustomCursor() {
     // document.body.append(targetDom);
     let targetDom = document.getElementsByClassName("custom-cursor")[0];
     let mobileDom = document.getElementsByClassName("mobile-center-wrapper")[0];
+    let hintDom = document.getElementsByClassName("hint-wrapper")[0];
     let sideDom = document.getElementsByClassName("side-wrapper")[0];
     targetDom.style.transform = "translate(" + (window.innerWidth/2) + "px, " + (window.innerHeight/2) + "px)";
     this.targetDom = targetDom;
     this.mobileDom = mobileDom;
+    this.hintDom = hintDom;
     this.sideDom = sideDom;
 
     let projectPlate = targetDom.getElementsByClassName("cursor-project-plate")[0];
@@ -770,6 +772,7 @@ const resumeUpdate = ( isGoingBack ) => {
 
 	if (customCursor.targetDom.classList.contains("mobile")) {
 	    customCursor.mobileDom.classList.remove("hide")
+        customCursor.hintDom.classList.remove("hide")
     }
 
     customCursor.sideDom.classList.remove("halt");
@@ -1002,6 +1005,7 @@ const initTouchEvents = ( e ) => {
 
     customCursor.targetDom.classList.add("mobile");
     customCursor.mobileDom.classList.remove("hide");
+    customCursor.hintDom.classList.remove("hide");
     customCursor.sideDom.classList.remove("hide");
 }
 
@@ -1018,6 +1022,7 @@ function init() {
                 // console.log("add mobile")
                 customCursor.targetDom.classList.add("mobile");
                 customCursor.mobileDom.classList.remove("hide");
+                customCursor.hintDom.classList.remove("hide");
                 customCursor.sideDom.classList.remove("hide");
                 // initTouchEvents()
                 // alert(e.pointerType);

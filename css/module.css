@@ -553,6 +553,99 @@ canvas{
     opacity: 0;
 }
 
+.hint-wrapper {
+    position: fixed;
+    left: 50%;
+    top: 75%;
+    width: 96px;
+    height: 96px;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+}
+
+.hint-wrapper > div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.hint-wrapper.hide {
+    display: none;
+}
+
+.hint-wrapper svg {
+    opacity: 0.75;
+}
+#svg_hand {
+    fill: rgb(0,0,0);
+    transform-origin: center center;
+    /* animation: swipe-hand-left 2s infinite linear; */
+    animation: swipe-hand-up 2s infinite linear;
+}
+#svg_arrow {
+    fill: rgb(0,0,0);
+    transform-origin: center center;
+    /* animation: swipe-arrow-left 2s infinite linear; */
+    animation: swipe-arrow-up 2s infinite linear;
+}
+@keyframes swipe-hand-up {
+    0%, 10%, 90%, 100% {
+        /* transform: translate(10%, -25%) rotate(-50deg); */
+        transform: translate(10%, -20%) rotate(10deg);
+        animation-timing-function: ease-in-out;
+    }
+    40%, 60% {
+        /* transform: translate(10%, 20%) rotate(-95deg); */
+        transform: translate(10%, 10%) rotate(-10deg);
+        animation-timing-function: ease-in-out;
+    }
+}
+@keyframes swipe-arrow-up {
+    0%, 14.99%, 95%, 100% {
+        transform: translate(-44%, -20%) rotate(90deg);
+        animation-timing-function: ease-out;
+    }
+    15% {
+        transform: translate(2%, -20%) rotate(-90deg);
+        animation-timing-function: ease-out;
+    }
+    45%, 64.99%{
+        transform: translate(2%, 20%) rotate(-90deg);
+        animation-timing-function: ease-out;
+    }
+    65% {
+        transform: translate(-44%, 20%) rotate(90deg);
+        animation-timing-function: ease-out;
+    }
+}
+@keyframes swipe-hand-left {
+    0%, 10%, 90%, 100% {
+        transform: translate(30%, 6%) rotate(36deg);
+        animation-timing-function: ease-in-out;
+    }
+    40%, 60% {
+        transform: translate(-20%, 0%) rotate(-12deg);
+        animation-timing-function: ease-in-out;
+    }
+}
+@keyframes swipe-arrow-left {
+    0%, 14.99%, 95%, 100% {
+        transform: translate(25%, -46%) rotate(180deg);
+        animation-timing-function: ease-out;
+    }
+    15% {
+        transform: translate(25%, 0%) rotate(0deg);
+        animation-timing-function: ease-out;
+    }
+    45%, 64.99%{
+        transform: translate(-25%, 0%) rotate(0deg);
+        animation-timing-function: ease-out;
+    }
+    65% {
+        transform: translate(-25%, -46%) rotate(180deg);
+        animation-timing-function: ease-out;
+    }
+}
 
 /* about */
 
