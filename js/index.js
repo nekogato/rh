@@ -809,6 +809,7 @@ const resumeUpdate = ( isGoingBack ) => {
     customCursor.targetDom.classList.remove("disable");
     customCursor.disable = false;
     customCursor.passthrough = false;
+    customCursor.isShowingProject = false;
 
 	if (customCursor.targetDom.classList.contains("mobile")) {
 	    customCursor.mobileDom.classList.remove("hide")
@@ -833,7 +834,6 @@ const resumeUpdate = ( isGoingBack ) => {
     } else {
         customCursor.targetDom.classList.remove("show-transition");
         customCursor.cursorAnimate();
-        customCursor.isShowingProject = false;
         customCursor.showHintIcon("leftup");
     }
 }
