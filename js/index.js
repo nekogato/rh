@@ -1411,8 +1411,8 @@ function init() {
 
     
 	tunnelgroup = new THREE.Group();
-    tunnelgroup.add( new addTunnelElement( 'img/bg2.jpg',0, 50 ) );
-    tunnelgroup.add( new addTunnelElement( 'img/bg1.jpg',spacing, 100 ) );
+    tunnelgroup.add( new addTunnelElement( 'img/lost.jpg',0, 50 ) );
+    tunnelgroup.add( new addTunnelElement( 'img/interactions.jpg',spacing, 100 ) );
     // tunnelgroup.add( new addTunnelElement( 'img/bg3.jpg',spacing*2, 150 ) );
     // tunnelgroup.add( new addTunnelElement( 'img/bg.jpg',spacing*3, 200 ) );
     tunnelgroup.position.y = 0;
