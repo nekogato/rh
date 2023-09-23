@@ -27,7 +27,7 @@ var isUpdateDisabled = false;
 var logo1;
 const projectTitles = [
     `<h1 class="text1">The Lost Metropolis<br><strong class="chi">情迷香港</strong><br><div class="text5 ">●<br>Shiu Ka Heng <strong class="chi">蕭家恒</strong></div></h1>`,
-    `<h1 class="text1">Intersections<br><strong class="chi">相交點<strong><br><div class="text5 ">●<br>Shiu Ka Heng <strong class="chi">蕭家恒</strong></div></h1>`,
+    `<h1 class="text1">Intersections<br><strong class="chi">相交點</strong><br><div class="text5 ">●<br>Shiu Ka Heng <strong class="chi">蕭家恒</strong></div></h1>`,
     `<h1 class="text1">Confidential<br>Records<br>●<br>Vvzela Kook</h1>`,
     `<h1 class="text1">The Lost<br>Metropolis State Theatre<br>●<br>Shiu Ka Heng</h1>`,
 ]
@@ -511,9 +511,10 @@ $(window).on('load', function() {
 
 var canchange = true
 var timer;
-var looptimer ;
-var looptimer2 ;
+var looptimer;
+var looptimer2;
 var customCursor;
+var hintTimer;
 
 function CustomCursor() {
     let curX
@@ -533,11 +534,15 @@ function CustomCursor() {
     let targetDom = document.getElementsByClassName("custom-cursor")[0];
     let mobileDom = document.getElementsByClassName("mobile-center-wrapper")[0];
     let hintDom = document.getElementsByClassName("hint-wrapper")[0];
+    let hintIcon = document.getElementsByClassName("hint-icon")[0];
+    hintIcon.hand = document.getElementById("svg_hand");
+    hintIcon.arrow = document.getElementById("svg_arrow");
     let sideDom = document.getElementsByClassName("side-wrapper")[0];
     targetDom.style.transform = "translate(" + (window.innerWidth/2) + "px, " + (window.innerHeight/2) + "px)";
     this.targetDom = targetDom;
     this.mobileDom = mobileDom;
     this.hintDom = hintDom;
+    this.hintIcon = hintIcon;
     this.sideDom = sideDom;
 
     let projectPlate = targetDom.getElementsByClassName("cursor-project-plate")[0];
@@ -720,8 +725,41 @@ function CustomCursor() {
         }
         // requestAnimationFrame(cursorAnimate)
     }
+
+    const showHintIcon = ( dir, doNow ) => {
+        clearTimeout(hintTimer);
+        if (dir !== "hide" && doNow !== true) {
+            hintTimer = setTimeout(showHintIcon, 5000, dir, true)
+        } else {
+            switch (dir) {
+                case "leftup":
+                    customCursor.hintIcon.classList.remove("hide");
+                    customCursor.hintIcon.addEventListener("transitionend", iconTransEnd)
+                    customCursor.hintIcon.hand.addEventListener("animationiteration", svgAniIteration)
+                    customCursor.hintDom.classList.add("swipe-leftup-left");
+                    customCursor.hintDom.classList.remove("swipe-leftup-up");
+                    customCursor.hintDom.classList.remove("swipe-up");
+                    break
+                case "up":
+                    customCursor.hintIcon.classList.remove("hide");
+                    customCursor.hintIcon.removeEventListener("transitionend", iconTransEnd)
+                    customCursor.hintIcon.hand.removeEventListener("animationiteration", svgAniIteration)
+                    customCursor.hintDom.classList.remove("swipe-leftup-left");
+                    customCursor.hintDom.classList.remove("swipe-leftup-up");
+                    customCursor.hintDom.classList.add("swipe-up");
+                    break
+                case "hide":
+                    customCursor.hintIcon.classList.add("hide");
+                    // customCursor.hintIcon.removeEventListener("transitionend", iconTransEnd)
+                    customCursor.hintIcon.hand.removeEventListener("animationiteration", svgAniIteration)
+                    break
+            }
+        }
+        customCursor.hintIcon.classList.remove("transition");
+    }
     
     this.cursorAnimate = cursorAnimate;
+    this.showHintIcon = showHintIcon;
 
 
     document.addEventListener("mousemove", mousemove)
@@ -754,7 +792,9 @@ const haltUpdate = () => {
     customCursor.passthrough = true;
     
     if (customCursor.targetDom.classList.contains("mobile")) {
-	    customCursor.mobileDom.classList.add("hide")
+	    customCursor.mobileDom.classList.add("hide");
+        customCursor.hintDom.classList.add("hide");
+        customCursor.showHintIcon("hide");
     }
     customCursor.sideDom.classList.add("hide");
 
@@ -793,6 +833,8 @@ const resumeUpdate = ( isGoingBack ) => {
     } else {
         customCursor.targetDom.classList.remove("show-transition");
         customCursor.cursorAnimate();
+        customCursor.isShowingProject = false;
+        customCursor.showHintIcon("leftup");
     }
 }
 
@@ -804,6 +846,7 @@ const prepareToShowProjectComplete = () => {
     showProject();
 }
 const prepareToShowProject = () => {
+    customCursor.isShowingProject = true;
     gsap.to( renderer.domElement, { duration: 2, opacity: 0, onComplete: prepareToShowProjectComplete });
     document.getElementsByClassName("home_content")[0].style.opacity = 0;
 
@@ -868,6 +911,7 @@ const touchendEvent = (e) => {
                 customCursor.targetDom.classList.remove('show-project');
                 customCursor.mobileDom.classList.remove('show-project');
                 customCursor.sideDom.classList.remove('show-project');
+                customCursor.showHintIcon("hide");
                 prepareToShowProject();
             } else {
                 if (diffY < -0.2) {
@@ -887,6 +931,7 @@ const touchendEvent = (e) => {
         // outside tunnel
         if (diffY > 0.2) {
             customCursor.targetDom.classList.add('show-transition');
+            customCursor.showHintIcon("hide");
             doEnterTunnel();
         } else {
             if (diffX > 0.2) {
@@ -920,7 +965,7 @@ const touchstartEvent = (e) => {
     // alert( customCursor.openmenu )
 
     if (customCursor.passthrough || customCursor.openmenu) {
-        if (!document.getElementsByClassName("home_body")[0].classList.contains("openmenu")) {
+        if (document.getElementsByClassName("home_body").length > 0 && !document.getElementsByClassName("home_body")[0].classList.contains("openmenu")) {
             if ( customCursor.openmenu === true ) {
                 // alert("turn off")
                 customCursor.openmenu = false
@@ -936,7 +981,8 @@ const touchstartEvent = (e) => {
     // alert(document.getElementsByClassName("home_body")[0].classList)
 
     if (
-        e.target.parentElement.parentElement.getAttribute("data-view") !== "list" &&
+        ( e.target.parentElement == null || e.target.parentElement.parentElement == null ||
+        e.target.parentElement.parentElement.getAttribute("data-view") !== "list") &&
         !e.target.parentElement.classList.contains("dropdown_btn") &&
         !document.getElementsByClassName("home_body")[0].classList.contains("openmenu")
     ) {
@@ -989,11 +1035,51 @@ const touchstartEvent = (e) => {
         document.addEventListener("touchend", touchendEvent);
     }
 }
+const iconTransEnd = (e) => {
+    // console.log(e)
+    if (e.propertyName === "opacity") {
+        if (customCursor.hintIcon.classList.contains("transition")) {
+            if (!customCursor.hintDom.classList.contains("swipe-up")) {
+                if (customCursor.hintDom.classList.contains("swipe-leftup-left")) {
+                    customCursor.hintDom.classList.remove("swipe-leftup-left");
+                    customCursor.hintDom.classList.add("swipe-leftup-up");
+                } else {
+                    customCursor.hintDom.classList.remove("swipe-leftup-up");
+                    customCursor.hintDom.classList.add("swipe-leftup-left");
+                }
+            }
+            customCursor.hintIcon.classList.remove("transition");
+        }
+        if (customCursor.hintIcon.classList.contains("hide")) {
+            customCursor.hintIcon.removeEventListener("transitionend", iconTransEnd)
+            customCursor.hintDom.classList.remove("swipe-leftup-left");
+            customCursor.hintDom.classList.remove("swipe-leftup-up");
+            customCursor.hintDom.classList.remove("swipe-up");
+        }
+    }
+}
+
+const svgAniIteration = (e) => {
+    // console.log(e);
+    // console.log(e.srcElement.id, e.elapsedTime);
+    if (e.elapsedTime >= 2) {
+        document.getElementsByClassName("hint-icon")[0].classList.add("transition");
+
+        // if (e.animationName == "swipe-hand-left" || e.animationName == "swipe-arrow-left") {
+        //     customCursor.hintDom.classList.remove("swipe-leftup-left");
+        //     customCursor.hintDom.classList.add("swipe-leftup-up");
+        // }
+        // if (e.animationName == "swipe-hand-up" || e.animationName == "swipe-arrow-up") {
+        //     customCursor.hintDom.classList.remove("swipe-leftup-up");
+        //     customCursor.hintDom.classList.add("swipe-leftup-left");
+        // }
+    }
+}
 const initTouchEvents = ( e ) => {
     // e.preventDefault();
 
-    console.log("initTouchEvent");
-    document.removeEventListener("touchstart", initTouchEvents)
+    // console.log("initTouchEvent");
+    // document.removeEventListener("touchstart", initTouchEvents)
     // prevent scroll/pinch gestures on window?
     // alert(document.getElementsByTagName("canvas")[0])
     // document.addEventListener('touchmove', preventScroll, {passive: false});
@@ -1001,12 +1087,17 @@ const initTouchEvents = ( e ) => {
     document.addEventListener("touchstart", touchstartEvent, {passive: false});
     // document.addEventListener("touchend", touchendEvent);
 
-    touchstartEvent(e);
+    // touchstartEvent(e);
 
     customCursor.targetDom.classList.add("mobile");
     customCursor.mobileDom.classList.remove("hide");
     customCursor.hintDom.classList.remove("hide");
+    customCursor.showHintIcon("leftup");
     customCursor.sideDom.classList.remove("hide");
+
+    // customCursor.hintIcon.addEventListener("transitionend", iconTransEnd)
+    // customCursor.hintIcon.hand.addEventListener("animationiteration", svgAniIteration)
+    // customCursor.hintDom.classList.add("swipe-leftup-left");
 }
 
 function init() {
@@ -1081,9 +1172,13 @@ function init() {
 
     customCursor = new CustomCursor();
     document.addEventListener("mousemove", firstMousemoveHandler);
-    document.addEventListener("pointerdown", pointerDownHandler);
+    // document.addEventListener("pointerdown", pointerDownHandler);
     document.addEventListener("click", clickEventHandler);
-    document.addEventListener("touchstart", initTouchEvents, {passive: false});
+
+    if ('ontouchstart' in document.documentElement) {
+        initTouchEvents();
+    }
+    // document.addEventListener("touchstart", initTouchEvents, {passive: false});
     
     logo1 = document.getElementsByClassName("header")[0];
 
@@ -1146,6 +1241,7 @@ function init() {
             customCursor.targetDom.classList.remove("show-right");
             customCursor.targetDom.classList.remove("show-exit");
             customCursor.targetDom.classList.add("show-transition");
+            customCursor.showHintIcon("hide");
 
             if (logo1 == undefined) console.log('!!!!')
             logo1.classList.remove("in-tunnel");
@@ -1160,6 +1256,7 @@ function init() {
                 // if (tunnelgroup.position.x === -currenttunnelindex * spacing) {
                 if ( Math.abs(-currenttunnelindex * spacing - tunnelgroup.position.x) <= 0.01 ) {
                     customCursor.targetDom.classList.remove("show-transition");
+                    customCursor.showHintIcon("leftup");
                     customCursor.cursorAnimate();
                 } else {
                     gsap.to(tunnelgroup.position, {
@@ -1168,6 +1265,7 @@ function init() {
                         ease: Power1.easeInOut,
                         onComplete: function() {
                             customCursor.targetDom.classList.remove("show-transition");
+                            customCursor.showHintIcon("leftup");
                             customCursor.cursorAnimate();
                         }
                     });
@@ -1176,12 +1274,14 @@ function init() {
             clicked = false;
         } else {
             customCursor.targetDom.classList.add("show-transition");
+            customCursor.showHintIcon("hide");
             gsap.to(tunnelgroup.position, {
                 duration: 3,
                 x: -currenttunnelindex*spacing, 
                 ease: Power1.easeInOut,
                 onComplete: function() {
                     customCursor.targetDom.classList.remove("show-transition");
+                    customCursor.showHintIcon("leftup");
                     customCursor.cursorAnimate();
                 }
             });
@@ -1230,12 +1330,18 @@ function init() {
 
                 looptimer2 = setTimeout(function(){
                     if(clicked){
-                        customCursor.projectPlate.innerHTML = projectTitles[currenttunnelindex];
-                        customCursor.mobileProjectPlate.innerHTML = projectTitles[currenttunnelindex];
-                        customCursor.sideProjectPlate.innerHTML = projectTitles[currenttunnelindex];
-                        if (customCursor.targetDom.classList.contains("show-transition")) {
+                        // console.log(customCursor.projectPlate.innerHTML ==  projectTitles[currenttunnelindex].toString())
+                        if (customCursor.projectPlate.innerHTML !== (projectTitles[currenttunnelindex].toString())) {
+                            // console.log("change")
+                            customCursor.projectPlate.innerHTML = projectTitles[currenttunnelindex];
+                            customCursor.mobileProjectPlate.innerHTML = projectTitles[currenttunnelindex];
+                            customCursor.sideProjectPlate.innerHTML = projectTitles[currenttunnelindex];
+                        }
+                        if (customCursor.targetDom.classList.contains("show-transition") && customCursor.isShowingProject !== true) {
                             // first time after getting in tunnel
                             customCursor.targetDom.classList.remove("show-transition");
+                            
+                            customCursor.showHintIcon("up");
                             if (
                                 !customCursor.targetDom.classList.contains("show-exit")
                                 // !customCursor.targetDom.classList.contains("show-left")

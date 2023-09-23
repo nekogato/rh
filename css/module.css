@@ -561,6 +561,9 @@ canvas{
     height: 96px;
     z-index: 1;
     transform: translate(-50%, -50%);
+    opacity: 1;
+    transition: opacity 250ms;
+    mix-blend-mode: difference;
 }
 
 .hint-wrapper > div {
@@ -570,52 +573,88 @@ canvas{
 }
 
 .hint-wrapper.hide {
+    /* display: none; */
+    opacity: 0;
+}
+
+.hint-wrapper.disable {
     display: none;
 }
 
 .hint-wrapper svg {
-    opacity: 0.75;
+    opacity: 1;
 }
-#svg_hand {
-    fill: rgb(0,0,0);
-    transform-origin: center center;
-    /* animation: swipe-hand-left 2s infinite linear; */
+.hint-wrapper.swipe-leftup-left #svg_hand {
+    animation: swipe-hand-left 2s infinite linear;
+}
+.hint-wrapper.swipe-leftup-left #svg_arrow {
+    animation: swipe-arrow-left 2s infinite linear;
+}
+.hint-wrapper.swipe-leftup-up #svg_hand {
     animation: swipe-hand-up 2s infinite linear;
 }
+.hint-wrapper.swipe-leftup-up #svg_arrow {
+    animation: swipe-arrow-up 2s infinite linear;
+}
+.hint-wrapper.swipe-up #svg_hand {
+    animation: swipe-hand-up 2s infinite linear;
+}
+.hint-wrapper.swipe-up #svg_arrow {
+    animation: swipe-arrow-up 2s infinite linear;
+}
+.hint-icon {
+    opacity: 1;
+    transition: opacity 500ms;
+}
+.hint-icon.transition {
+    opacity: 0;
+    /* transition: opacity 500ms; */
+}
+.hint-icon.hide {
+    opacity: 0;
+}
+#svg_hand {
+    /* fill: rgb(0,0,0); */
+    fill: rgb(255,255,255);
+    transform-origin: center center;
+    /* animation: swipe-hand-left 2s infinite linear; */
+    /* animation: swipe-hand-up 2s infinite linear; */
+}
 #svg_arrow {
-    fill: rgb(0,0,0);
+    /* fill: rgb(0,0,0); */
+    fill: rgb(255,255,255);
     transform-origin: center center;
     /* animation: swipe-arrow-left 2s infinite linear; */
-    animation: swipe-arrow-up 2s infinite linear;
+    /* animation: swipe-arrow-up 2s infinite linear; */
+}
+@keyframes hint-left-up {
+    0%, 49% {
+        animation: swipe-hand-left 2s forward linear;
+    }
+    50% {
+        animation: swipe-hand-up 2s forward linear;
+    }
 }
 @keyframes swipe-hand-up {
     0%, 10%, 90%, 100% {
         /* transform: translate(10%, -25%) rotate(-50deg); */
-        transform: translate(10%, -20%) rotate(10deg);
+        transform: translate(10%, -30%) rotate(10deg);
         animation-timing-function: ease-in-out;
     }
     40%, 60% {
         /* transform: translate(10%, 20%) rotate(-95deg); */
-        transform: translate(10%, 10%) rotate(-10deg);
+        transform: translate(10%, 20%) rotate(-15deg);
         animation-timing-function: ease-in-out;
     }
 }
 @keyframes swipe-arrow-up {
-    0%, 14.99%, 95%, 100% {
-        transform: translate(-44%, -20%) rotate(90deg);
-        animation-timing-function: ease-out;
+    0%, 10%, 90%, 100% {
+        transform: translate(-44%, -25%) rotate(90deg);
+        animation-timing-function: ease-in-out;
     }
-    15% {
-        transform: translate(2%, -20%) rotate(-90deg);
-        animation-timing-function: ease-out;
-    }
-    45%, 64.99%{
-        transform: translate(2%, 20%) rotate(-90deg);
-        animation-timing-function: ease-out;
-    }
-    65% {
-        transform: translate(-44%, 20%) rotate(90deg);
-        animation-timing-function: ease-out;
+    40%, 60%{
+        transform: translate(-44%, 25%) rotate(90deg);
+        animation-timing-function: ease-in-out;
     }
 }
 @keyframes swipe-hand-left {
@@ -629,21 +668,13 @@ canvas{
     }
 }
 @keyframes swipe-arrow-left {
-    0%, 14.99%, 95%, 100% {
-        transform: translate(25%, -46%) rotate(180deg);
-        animation-timing-function: ease-out;
-    }
-    15% {
+    0%, 10%, 90%, 100% {
         transform: translate(25%, 0%) rotate(0deg);
-        animation-timing-function: ease-out;
+        animation-timing-function: ease-in-out;
     }
-    45%, 64.99%{
+    40%, 60%{
         transform: translate(-25%, 0%) rotate(0deg);
-        animation-timing-function: ease-out;
-    }
-    65% {
-        transform: translate(-25%, -46%) rotate(180deg);
-        animation-timing-function: ease-out;
+        animation-timing-function: ease-in-out;
     }
 }
 

@@ -294,8 +294,6 @@ function statechange(){
 		setTimeout(function(){
 
 			$( ".load_content" ).load( fullUrl+" .load_content > *", function() {
-				console.log("ajax loaded")
-
 				var body = $("html, body");
 				body.stop().animate({scrollTop:0}, 300, 'swing', function() { });
 
@@ -310,21 +308,11 @@ function statechange(){
 					$("canvas").stop().animate({opacity:1}, 1200, 'swing', function() { });
 
 					resumeUpdate();
-					// isUpdateDisabled=false;
-					// customCursor.disable = false;
-					// $(".custom-cursor").removeClass("disable")
-					// $(".custom-cursor").removeClass("hide")
-					// $(".custom-cursor").removeClass("show-transition")
-					
 				}else{
 					$("body").removeClass("home_body")
 					$("canvas").stop().animate({opacity:0}, 1200, 'swing', function() { });
 
 					haltUpdate()
-					// isUpdateDisabled=true;
-					// customCursor.disable = true;
-					// $(".custom-cursor").addClass("disable")
-					// $(".custom-cursor").addClass("hide")
 				}
 				
 				
@@ -423,9 +411,6 @@ function ajax_event(){
 		$(this).addClass("active");
 		if($(".view_icon_wrapper li[data-view='tunnel']").hasClass("active")){
 			$(".home_col_4").stop().fadeOut(function(){
-				// customCursor.disable = false;
-				// $(".custom-cursor").removeClass("disable")
-				// $(".custom-cursor").removeClass("hide")
 				switchTunnelView()
 				$(".home_col_4").removeClass("finish")
 			});
@@ -434,9 +419,6 @@ function ajax_event(){
 				customCursor.sideDom.classList.add("halt");
 			}
 			$(".home_col_4").stop().fadeIn(function(){
-				// customCursor.disable = true;
-				// $(".custom-cursor").addClass("disable")
-				// $(".custom-cursor").addClass("hide")
 				switchListView()
 				$(".home_col_4").addClass("finish")
 			});
